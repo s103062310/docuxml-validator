@@ -1,0 +1,80 @@
+:root {
+  /* gray */
+  --color--black: #000000;
+  --color--gray-dark: #555555;
+  --color--gray: #777777;
+  --color--gray-light: #aeaeae;
+  --color--gray-border: #e8e8e8;
+  --color--gray-bg: #f5f5f5;
+  --color--white: #ffffff;
+
+  /* blue - main visual */
+  --color--blue-bg: #ebf0fc;
+  --color--blue-light: #6390f8;
+  --color--blue: #316cf5;
+  --color--blue-dark: #2157d4;
+
+  /* semantic */
+  --color--success: #11c97f;
+  --color--error: #ff474e;
+  
+  /* shadow */
+  --color--shadow: #00000029;
+}
+
+html {
+  font-size: 16px;
+  font-weight: 300;
+  font-family: Noto Sans, sans-serif;
+}
+
+body {
+  background-color: var(--color--gray-bg);
+}
+
+nav {
+  height: 3rem;
+  padding: .375rem .75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 0 10px var(--color--shadow);
+}
+
+main {
+  padding: .75rem;
+  display: flex;
+  gap: 1rem;
+}
+
+h1, h2, h3 {
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+}
+
+a {
+  color: var(--color--blue);
+}
+
+a:hover, a:active, a:focus {
+  color: var(--color--blue-dark);
+} 
+
+.logo {
+  height: 100%;
+}
+
+.bi {
+  font-size: 1.5rem;
+}
