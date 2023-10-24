@@ -37,7 +37,7 @@
     </a>
 
     <a href="https://docusky.org.tw/DocuSky/docuTools/userMain/" target="_blank">
-      <i class="bi bi-cloud-fill"></i>
+      <i class="bi bi-cloud-fill" style="font-size: 1.5rem;"></i>
       <!-- TODO: tooltip 我的資料庫 -->
     </a>
 	</nav>
@@ -47,14 +47,17 @@
     <div class="intro">
       <h1>DocuXML 檢測工具</h1>
       <p>這個工具提供 DocuXML 的合法性檢測，快速找出無法建庫的原因並修正。</p>
-      <button class="btn" onclick="$('#upload-input').click();">上傳 XML 檔案</button>
+      <button class="btn" onclick="$('#upload-input').click()">上傳 XML 檔案</button>
       <input id="upload-input" type="file" accept=".xml" style="display: none;" />
     </div>
 
-    <div class="content"></div>
+    <div class="content">
+			<div id="status"></div>
+		</div>
 	</main>
 
 	<!-- JAVASCRIPT FILE -->
+	<script src="./js/main.js"></script>
 
 </body>
 

@@ -34,7 +34,7 @@ body {
 
 nav {
   height: 3rem;
-  padding: .375rem .75rem;
+  padding: .375rem 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -42,9 +42,9 @@ nav {
 }
 
 main {
-  padding: .75rem;
+  padding: 1rem;
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 h1, h2, h3 {
@@ -76,10 +76,6 @@ a:hover, a:active, a:focus {
   height: 100%;
 }
 
-.bi {
-  font-size: 1.5rem;
-}
-
 .btn {
   background-color: var(--color--blue);
   color: var(--color--white);
@@ -88,4 +84,11 @@ a:hover, a:active, a:focus {
 .btn:hover, .btn:active, .btn:focus {
   background-color: var(--color--blue-dark);
   color: var(--color--white);
+}
+
+.spinner-grow {
+  --bs-spinner-width: 1rem;
+  --bs-spinner-height: 1rem;
+  --bs-spinner-animation-speed: 1s;
+  color: var(--color--gray-light);
 }
