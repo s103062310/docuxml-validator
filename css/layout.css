@@ -76,6 +76,8 @@ a:hover, a:active, a:focus {
   height: 100%;
 }
 
+/* override bootstrap */
+
 .btn {
   background-color: var(--color--blue);
   color: var(--color--white);
