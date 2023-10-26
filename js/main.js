@@ -25,9 +25,50 @@ const getDataFromXmlFile = (file) => {
   reader.onload = (event) => {
     _originXml = /** @type {string} */ (event.target.result)
     addStatusRow()
+    validate()
   }
 
   reader.readAsText(file)
+}
+
+const validate = () => {
+  let i = 0
+  while (i < _originXml.length) {
+    // find label
+    const labelStartIndex = _originXml.indexOf('<', i)
+    const labelEndIndex = _originXml.indexOf('>', labelStartIndex)
+
+    // cannot find anymore label
+    if (labelStartIndex === -1 || labelEndIndex === -1) {
+      break
+    }
+
+    const labelStr = _originXml.substring(labelStartIndex + 1, labelEndIndex).trim() // remove '<' & '>'
+    const label = parseLabel(labelStr)
+    console.log(label)
+    i = labelEndIndex + 1
+  }
+
+  stopValidation({ status: 'success', text: '完成！' })
+}
+
+/**
+ * @typedef {Object} Label
+ * @property {string} type start / end / single
+ * @property {string} name label name
+ */
+
+/**
+ * parse xml label from original string
+ * @param {string} labelStr string of a xml label
+ * @return {Label} parsed label data
+ */
+const parseLabel = (labelStr) => {
+  const result = labelStr.split(/\s/)
+  const type =
+    labelStr[labelStr.length - 1] === '/' ? 'single' : labelStr[0] === '/' ? 'end' : 'start'
+  const name = result[0].replace('/', '')
+  return { type, name }
 }
 
 /**
