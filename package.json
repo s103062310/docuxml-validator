@@ -1,4 +1,9 @@
 {
+  "name": "docuxml-validator",
+  "version": "1.0.0",
+  "repository": "https://github.com/s103062310/docuxml-validator.git",
+  "author": "s103062310 <cindy2438@gmail.com>",
+  "private": true,
   "devDependencies": {
     "@types/jquery": "^3.5.25"
   }
