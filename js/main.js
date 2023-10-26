@@ -1,4 +1,11 @@
+/** @type {string} */
 let _originXml = ''
+
+/** @type {string[]} */
+const _labelNameStack = []
+
+/** @type {number} */
+let _validateIndex = 0
 
 /**
  * trigger when user uploading xml file
@@ -24,6 +31,7 @@ const getDataFromXmlFile = (file) => {
    */
   reader.onload = (event) => {
     _originXml = /** @type {string} */ (event.target.result)
+    _validateIndex = _originXml.indexOf('<ThdlPrototypeExport', 0)
     addStatusRow()
     validate()
   }
@@ -32,10 +40,9 @@ const getDataFromXmlFile = (file) => {
 }
 
 const validate = () => {
-  let i = 0
-  while (i < _originXml.length) {
+  while (_validateIndex < _originXml.length) {
     // find label
-    const labelStartIndex = _originXml.indexOf('<', i)
+    const labelStartIndex = _originXml.indexOf('<', _validateIndex)
     const labelEndIndex = _originXml.indexOf('>', labelStartIndex)
 
     // cannot find anymore label
@@ -44,18 +51,41 @@ const validate = () => {
     }
 
     const labelStr = _originXml.substring(labelStartIndex + 1, labelEndIndex).trim() // remove '<' & '>'
-    const label = parseLabel(labelStr)
-    console.log(label)
-    i = labelEndIndex + 1
+    const { labelType, labelName } = parseLabel(labelStr)
+
+    if (!checkDocuXmlLabel(labelName)) {
+      console.log('illegal', labelName)
+      stopValidation({ status: 'error', text: `無法辨識標籤 &lt;${labelName}&gt;` })
+      return
+    }
+
+    if (labelType === 'start') {
+      _labelNameStack.push(labelName)
+    } else if (labelType === 'end') {
+      const topLabelName = _labelNameStack.pop()
+      if (topLabelName !== labelName) {
+        // TODO: handle error
+        console.log('error!')
+      }
+    }
+
+    _validateIndex = labelEndIndex + 1
   }
 
   stopValidation({ status: 'success', text: '完成！' })
 }
 
+const checkDocuXmlLabel = (labelName) => {
+  const stackLength = _labelNameStack.length
+  const parentLabelName = stackLength > 0 ? _labelNameStack[stackLength - 1] : 'root'
+  const isLegal = _xmlArchitecture[parentLabelName].includes(labelName)
+  return isLegal
+}
+
 /**
  * @typedef {Object} Label
- * @property {string} type start / end / single
- * @property {string} name label name
+ * @property {('start' | 'end' | 'single')} labelType
+ * @property {string} labelName
  */
 
 /**
@@ -65,15 +95,15 @@ const validate = () => {
  */
 const parseLabel = (labelStr) => {
   const result = labelStr.split(/\s/)
-  const type =
+  const labelType =
     labelStr[labelStr.length - 1] === '/' ? 'single' : labelStr[0] === '/' ? 'end' : 'start'
-  const name = result[0].replace('/', '')
-  return { type, name }
+  const labelName = result[0].replace('/', '')
+  return { labelType, labelName }
 }
 
 /**
  * @typedef {Object} StatusRow
- * @property {string} [status] loading / success / error
+ * @property {('loading' | 'success' | 'error')} [status] displayed type of the row
  * @property {string} [text] custom message
  */
 
