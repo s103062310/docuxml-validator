@@ -1,46 +1,3 @@
-/** @type {string} */
-let _originXml = ''
-
-/** @type {string[]} */
-const _labelNameStack = []
-
-/** @type {number} */
-let _validateIndex = 0
-
-const _stopInfo = {}
-
-/**
- * trigger when user uploading xml file
- * @param {JQuery.ChangeEvent} event
- */
-$('#upload-input').on('change', (event) => {
-  const inputElement = /** @type {HTMLInputElement} */ (event.target)
-  const file = inputElement.files[0]
-  $(inputElement).val('') // clear uploaded file
-  getDataFromXmlFile(file)
-})
-
-/**
- * extract data from uploaded file
- * @param {File} file
- */
-const getDataFromXmlFile = (file) => {
-  const reader = new FileReader()
-
-  /**
-   * callback after loading: save result into _originXml and start validating
-   * @param {ProgressEvent<FileReader>} event
-   */
-  reader.onload = (event) => {
-    _originXml = /** @type {string} */ (event.target.result)
-    _validateIndex = _originXml.indexOf('<ThdlPrototypeExport', 0)
-    addStatusRow()
-    validate()
-  }
-
-  reader.readAsText(file)
-}
-
 const validate = () => {
   while (_validateIndex < _originXml.length) {
     // find label
@@ -95,42 +52,13 @@ const validate = () => {
         console.log('error!')
       }
       _validateIndex = labelEndIndex + 1
+    } else {
+      _validateIndex = labelEndIndex + 1
     }
   }
 
   stopValidation({ status: 'success', text: '完成！' })
 }
-
-/**
- * @typedef {Object} Label
- * @property {('start' | 'end' | 'single')} labelType
- * @property {string} labelName
- */
-
-/**
- * parse xml label from original string
- * @param {string} labelStr string of a xml label
- * @return {Label} parsed label data
- */
-const parseLabel = (labelStr) => {
-  const result = labelStr.split(/\s/)
-  const labelType =
-    labelStr[labelStr.length - 1] === '/' ? 'single' : labelStr[0] === '/' ? 'end' : 'start'
-  const labelName = result[0].replace('/', '')
-  return { labelType, labelName }
-}
-
-const findEndLabel = ({ label, index }) => {
-  const str = _originXml.slice(index)
-  const indexInSlice = str.search(`<\\s*\/\\s*${label}\\s*>`)
-  return indexInSlice + index
-}
-
-/**
- * @typedef {Object} StatusRow
- * @property {('loading' | 'success' | 'error')} [status] displayed type of the row
- * @property {string} [text] custom message
- */
 
 /**
  * stop validation
@@ -141,11 +69,21 @@ const stopValidation = (row) => {
   addStatusRow(row)
 }
 
+/**
+ * continue validate from recorded stop point
+ */
 const continueValidate = () => {
+  // reset ui
   $('#detail').empty()
   addStatusRow()
+
+  // ignore label
   _xmlArchitecture[_stopInfo.parentLabelName].push(_stopInfo.labelName)
+
+  // find end label as start index of validation
   const endLabelIndex = findEndLabel({ label: _stopInfo.labelName, index: _stopInfo.index + 1 })
   _validateIndex = endLabelIndex + 1
+
+  // restart
   validate()
 }
