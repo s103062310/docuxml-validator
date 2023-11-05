@@ -17,7 +17,7 @@
   /* semantic */
   --color--success: #11c97f;
   --color--error: #ff474e;
-  
+
   /* shadow */
   --color--shadow: #00000029;
 }
@@ -34,7 +34,7 @@ body {
 
 nav {
   height: 3rem;
-  padding: .375rem 1rem;
+  padding: 0.375rem 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -47,7 +47,9 @@ main {
   gap: 1.5rem;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   margin-bottom: 1rem;
 }
 
@@ -68,9 +70,11 @@ a {
   transition: color 150ms ease-in-out;
 }
 
-a:hover, a:active, a:focus {
+a:hover,
+a:active,
+a:focus {
   color: var(--color--blue-dark);
-} 
+}
 
 .logo {
   height: 100%;
@@ -83,9 +87,11 @@ a:hover, a:active, a:focus {
   color: var(--color--white);
 }
 
-.btn:hover, .btn:active, .btn:focus {
-  background-color: var(--color--blue-dark);
-  color: var(--color--white);
+.btn:hover,
+.btn:active,
+.btn:focus {
+  background-color: var(--color--blue-dark) !important;
+  color: var(--color--white) !important;
 }
 
 .spinner-grow {

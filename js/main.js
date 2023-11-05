@@ -7,6 +7,8 @@ const _labelNameStack = []
 /** @type {number} */
 let _validateIndex = 0
 
+const _stopInfo = {}
+
 /**
  * trigger when user uploading xml file
  * @param {JQuery.ChangeEvent} event
@@ -53,33 +55,50 @@ const validate = () => {
     const labelStr = _originXml.substring(labelStartIndex + 1, labelEndIndex).trim() // remove '<' & '>'
     const { labelType, labelName } = parseLabel(labelStr)
 
-    if (!checkDocuXmlLabel(labelName)) {
-      console.log('illegal', labelName)
-      stopValidation({ status: 'error', text: `無法辨識標籤 &lt;${labelName}&gt;` })
-      return
-    }
-
     if (labelType === 'start') {
-      _labelNameStack.push(labelName)
+      const stackLength = _labelNameStack.length
+      const parentLabelName = stackLength > 0 ? _labelNameStack[stackLength - 1] : 'root'
+
+      // check label is a valid child of parent
+      if (!_xmlArchitecture[parentLabelName].includes(labelName)) {
+        _stopInfo.parentLabelName = parentLabelName
+        _stopInfo.labelName = labelName
+        _stopInfo.index = labelEndIndex + 1
+        stopValidation({ status: 'error', text: `無法辨識標籤 &lt;${labelName}&gt;` })
+        showCannotIdentifyLabel()
+        return
+      }
+
+      if (labelName in _xmlArchitecture) {
+        // label have children
+        _labelNameStack.push(labelName)
+        _validateIndex = labelEndIndex + 1
+      } else {
+        // label is leaf
+        // find end label
+        const endLabelIndex = findEndLabel({ label: labelName, index: labelEndIndex + 1 })
+
+        // cannot find end label
+        if (endLabelIndex === -1) {
+          console.log('error')
+        }
+
+        const value = _originXml.substring(labelEndIndex + 1, endLabelIndex).trim()
+        // TODO: check value string
+        _validateIndex = endLabelIndex + 1
+        console.log(endLabelIndex, value)
+      }
     } else if (labelType === 'end') {
       const topLabelName = _labelNameStack.pop()
       if (topLabelName !== labelName) {
         // TODO: handle error
         console.log('error!')
       }
+      _validateIndex = labelEndIndex + 1
     }
-
-    _validateIndex = labelEndIndex + 1
   }
 
   stopValidation({ status: 'success', text: '完成！' })
-}
-
-const checkDocuXmlLabel = (labelName) => {
-  const stackLength = _labelNameStack.length
-  const parentLabelName = stackLength > 0 ? _labelNameStack[stackLength - 1] : 'root'
-  const isLegal = _xmlArchitecture[parentLabelName].includes(labelName)
-  return isLegal
 }
 
 /**
@@ -101,6 +120,12 @@ const parseLabel = (labelStr) => {
   return { labelType, labelName }
 }
 
+const findEndLabel = ({ label, index }) => {
+  const str = _originXml.slice(index)
+  const indexInSlice = str.search(`<\\s*\/\\s*${label}\\s*>`)
+  return indexInSlice + index
+}
+
 /**
  * @typedef {Object} StatusRow
  * @property {('loading' | 'success' | 'error')} [status] displayed type of the row
@@ -116,26 +141,11 @@ const stopValidation = (row) => {
   addStatusRow(row)
 }
 
-/**
- * add a row in status block
- * @param {StatusRow} row row data which is going to display
- */
-const addStatusRow = ({ status = 'loading', text = '驗證中...' } = {}) => {
-  const isLoading = status === 'loading'
-  const isSuccess = status === 'success'
-
-  const style = isLoading ? '' : `style="color: var(--color--${status});"`
-
-  const icon = isLoading
-    ? '<div class="spinner-grow" aria-hidden="true"></div>'
-    : `<i class="bi bi-${isSuccess ? 'check' : 'x'}-circle-fill"></i>`
-
-  const html = `
-    <div class="status-row" ${style}>
-      ${icon}
-      <div>${text}</div>
-    </div>
-  `
-
-  $('#status').append(html)
+const continueValidate = () => {
+  $('#detail').empty()
+  addStatusRow()
+  _xmlArchitecture[_stopInfo.parentLabelName].push(_stopInfo.labelName)
+  const endLabelIndex = findEndLabel({ label: _stopInfo.labelName, index: _stopInfo.index + 1 })
+  _validateIndex = endLabelIndex + 1
+  validate()
 }
