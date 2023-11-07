@@ -5,8 +5,12 @@
 $('#upload-input').on('change', (event) => {
   const inputElement = /** @type {HTMLInputElement} */ (event.target)
   const file = inputElement.files[0]
-  $(inputElement).val('') // clear uploaded file
   getDataFromXmlFile(file)
+
+  // reset data & ui
+  $(inputElement).val('') // clear uploaded file
+  $('#upload-btn').hide()
+  $('#status').empty()
 })
 
 /**

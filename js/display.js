@@ -32,9 +32,9 @@ const showCannotIdentifyLabel = () => {
       <a href="mailto:${email}?subject=${subject}&body=${body}">${email}</a> 
       由專人協助。
     </div>
-    <div class="group">
+    <div class="group" style="grid-template-columns: repeat(2, 1fr);">
       <button class="btn" onclick="continueValidate()">略過並繼續</button>
-      <button class="btn">結束</button>
+      <button class="btn" onclick="endValidate()">結束</button>
     </div>
   `
   $('#detail').append(html)

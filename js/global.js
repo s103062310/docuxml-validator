@@ -2,12 +2,12 @@
 let _originXml = ''
 
 /** @type {string[]} */
-const _labelNameStack = []
+let _labelNameStack = []
 
 /** @type {number} */
 let _validateIndex = 0
 
-const _stopInfo = {}
+let _stopInfo = {}
 
 /**
  * @typedef {Object} Label

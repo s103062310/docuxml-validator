@@ -58,6 +58,7 @@ const validate = () => {
   }
 
   stopValidation({ status: 'success', text: '完成！' })
+  endValidate()
 }
 
 /**
@@ -86,4 +87,19 @@ const continueValidate = () => {
 
   // restart
   validate()
+}
+
+/**
+ * end the whole validate procedure
+ */
+const endValidate = () => {
+  // reset data
+  _originXml = ''
+  _labelNameStack = []
+  _validateIndex = 0
+  _stopInfo = {}
+
+  // reset ui
+  $('#detail').empty()
+  $('#upload-btn').show()
 }
