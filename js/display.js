@@ -19,6 +19,14 @@ const addStatusRow = ({ status = 'loading', text = '驗證中...' } = {}) => {
 }
 
 /**
+ * add label at the end of the last status row
+ * @param {string} text label text
+ */
+const addActionLabel = (text) => {
+  $('.status-row:last-child').append(`<span class="label">${text}</span>`)
+}
+
+/**
  * show error solution
  */
 const showCannotIdentifyLabel = () => {

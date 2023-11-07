@@ -76,6 +76,7 @@ const stopValidation = (row) => {
 const continueValidate = () => {
   // reset ui
   $('#detail').empty()
+  addActionLabel('略過')
   addStatusRow()
 
   // ignore label
