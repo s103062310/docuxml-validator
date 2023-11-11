@@ -47,3 +47,19 @@ const showCannotIdentifyLabel = () => {
   `
   $('#detail').append(html)
 }
+
+const showDetectSymbol = () => {
+  let text = _stopInfo.value
+  _stopInfo.symbol.reverse().forEach(({ index, target }) => {
+    const beforeStr = text.substring(0, index)
+    const afterStr = text.substring(index + 1)
+    const highlight = `<span class="highlight">${_symbol[target]}</span>`
+    text = `${beforeStr}${highlight}${afterStr}`
+  })
+  const html = `
+    <div class="msg-board">
+      ${text.replace(/\n/g, '<br/>')}
+    </div>
+  `
+  $('#detail').append(html)
+}

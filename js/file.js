@@ -8,7 +8,7 @@ $('#upload-input').on('change', (event) => {
   getDataFromXmlFile(file)
   _filename = file.name
 
-  // reset data & ui
+  // reset ui
   $(inputElement).val('') // clear uploaded file
   $('#upload-btn').hide()
   $('#download-btn').hide()
@@ -30,6 +30,7 @@ const getDataFromXmlFile = (file) => {
     _originXml = /** @type {string} */ (event.target.result)
     _validateIndex = _originXml.indexOf('<ThdlPrototypeExport', 0)
     _xml = _originXml.substring(0, _validateIndex)
+    _labelNameStack = []
     addStatusRow()
     validate()
   }
@@ -67,4 +68,5 @@ const downloadResult = () => {
   }
 
   downloadLink.click()
+  // TODO: no download if no error
 }

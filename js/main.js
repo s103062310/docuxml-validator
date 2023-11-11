@@ -4,6 +4,7 @@
 const validate = () => {
   while (_validateIndex < _originXml.length) {
     // find label
+    // BUG: 若文本含有 < > 可能無法分辨是否真的為 label
     const labelStartIndex = _originXml.indexOf('<', _validateIndex)
     const labelEndIndex = _originXml.indexOf('>', labelStartIndex)
 
@@ -12,9 +13,31 @@ const validate = () => {
       // TODO: check remaining string
       break
     } else {
-      // TODO: check string between last label and this label
+      // check string between last label and this label
       const value = _originXml.substring(_validateIndex, labelStartIndex)
-      _xml += value
+      const illegalSymbol = RegExp('[<>&"]', 'g')
+      const symbol = []
+      let result
+
+      while ((result = illegalSymbol.exec(value)) !== null) {
+        symbol.push({ index: illegalSymbol.lastIndex - 1, target: result[0] })
+      }
+
+      if (symbol.length > 0) {
+        // invalid
+        _stopInfo = { value, symbol }
+        stopValidation({
+          status: 'error',
+          text: `偵測到特殊符號。${Object.values(_symbol).join(
+            '、',
+          )} 為 xml 格式中用來辨認標籤的符號，請修改文本避免使用。`,
+        })
+        showDetectSymbol()
+        return
+      } else {
+        // valid
+        _xml += value
+      }
     }
 
     // parse label
@@ -31,10 +54,11 @@ const validate = () => {
         parentLabelName in _xmlArchitecture &&
         !_xmlArchitecture[parentLabelName].includes(labelName)
       ) {
-        _stopInfo.parentLabelName = parentLabelName
-        _stopInfo.labelName = labelName
-        _stopInfo.index = labelEndIndex + 1
-        stopValidation({ status: 'error', text: `無法辨識標籤 &lt;${labelName}&gt;` })
+        _stopInfo = { parentLabelName, labelName }
+        stopValidation({
+          status: 'error',
+          text: `無法辨識標籤 ${_symbol['<']}${labelName}${_symbol['>']}`,
+        })
         showCannotIdentifyLabel()
         return
       }
@@ -45,7 +69,8 @@ const validate = () => {
 
       // TODO: handle error
       if (topLabelName !== labelName) {
-        console.log('error!')
+        console.log('error!', labelName)
+        return
       }
     } else {
       // TODO: single label
@@ -89,12 +114,6 @@ const continueValidate = () => {
  * end the whole validate procedure
  */
 const endValidate = () => {
-  // reset data
-  _originXml = ''
-  _labelNameStack = []
-  _validateIndex = 0
-  _stopInfo = {}
-
   // reset ui
   $('#detail').empty()
   $('#upload-btn').show()
