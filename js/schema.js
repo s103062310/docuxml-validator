@@ -42,8 +42,12 @@ const _metadata = [
 const _xmlArchitecture = {
   root: ['?xml', 'ThdlPrototypeExport'],
   ThdlPrototypeExport: ['corpus', 'documents'],
-  corpus: ['metadata_field_settings', 'feature_analysis'],
+  corpus: ['metadata_field_settings', 'feature_analysis', 'PageParameters'],
   metadata_field_settings: [..._metadata],
   feature_analysis: ['spotlight', 'tag'],
-  documents: [],
+  PageParameters: ['MaxCueItems', 'CorpusTrees', 'HideCueDisplayBeforeSymbol', 'CueSeparator'],
+  MaxCueItems: ['Spotlight'],
+  CorpusTrees: ['CatTree'],
+  documents: ['document'],
+  document: [..._metadata, 'xml_metadata', 'doc_content'],
 }
