@@ -45,4 +45,5 @@ const _xmlArchitecture = {
   corpus: ['metadata_field_settings', 'feature_analysis'],
   metadata_field_settings: [..._metadata],
   feature_analysis: ['spotlight', 'tag'],
+  documents: [],
 }

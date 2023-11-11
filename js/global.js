@@ -1,6 +1,7 @@
 /** @type {string} */
 let _originXml = ''
 let _xml = ''
+let _filename = 'validated'
 
 /** @type {string[]} */
 let _labelNameStack = []

@@ -1,3 +1,6 @@
+/**
+ * main validation loop
+ */
 const validate = () => {
   while (_validateIndex < _originXml.length) {
     // find label
@@ -10,6 +13,8 @@ const validate = () => {
       break
     } else {
       // TODO: check string between last label and this label
+      const value = _originXml.substring(_validateIndex, labelStartIndex)
+      _xml += value
     }
 
     // parse label
@@ -34,19 +39,20 @@ const validate = () => {
         return
       }
 
-      // update stack
       _labelNameStack.push(labelName)
     } else if (labelType === 'end') {
-      // update stack
       const topLabelName = _labelNameStack.pop()
 
       // TODO: handle error
       if (topLabelName !== labelName) {
         console.log('error!')
       }
+    } else {
+      // TODO: single label
     }
 
-    // update index
+    // update
+    _xml += `<${labelStr}>`
     _validateIndex = labelEndIndex + 1
   }
 
@@ -92,4 +98,8 @@ const endValidate = () => {
   // reset ui
   $('#detail').empty()
   $('#upload-btn').show()
+
+  // download result
+  $('#download-btn').show()
+  downloadResult()
 }

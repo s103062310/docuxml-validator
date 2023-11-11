@@ -63,10 +63,15 @@
       <div class="intro">
         <h1>DocuXML 檢測工具</h1>
         <p>這個工具提供 DocuXML 的合法性檢測，快速找出無法建庫的原因並修正。</p>
-        <button id="upload-btn" class="btn" onclick="$('#upload-input').click()">
-          上傳 XML 檔案
-        </button>
-        <input id="upload-input" type="file" accept=".xml" style="display: none" />
+        <div class="group" style="display: flex">
+          <button id="upload-btn" class="btn" onclick="$('#upload-input').click()">
+            上傳 XML 檔案
+          </button>
+          <input id="upload-input" type="file" accept=".xml" style="display: none" />
+          <button id="download-btn" class="btn" onclick="downloadResult()" style="display: none">
+            下載已修正成果
+          </button>
+        </div>
       </div>
 
       <div class="content">
