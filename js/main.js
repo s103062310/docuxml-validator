@@ -4,11 +4,15 @@ const validate = () => {
     const labelStartIndex = _originXml.indexOf('<', _validateIndex)
     const labelEndIndex = _originXml.indexOf('>', labelStartIndex)
 
-    // cannot find anymore label
     if (labelStartIndex === -1 || labelEndIndex === -1) {
+      // cannot find anymore label
+      // TODO: check remaining string
       break
+    } else {
+      // TODO: check string between last label and this label
     }
 
+    // parse label
     const labelStr = _originXml.substring(labelStartIndex + 1, labelEndIndex).trim() // remove '<' & '>'
     const { labelType, labelName } = parseLabel(labelStr)
 
@@ -17,7 +21,11 @@ const validate = () => {
       const parentLabelName = stackLength > 0 ? _labelNameStack[stackLength - 1] : 'root'
 
       // check label is a valid child of parent
-      if (!_xmlArchitecture[parentLabelName].includes(labelName)) {
+      // label not in _xmlArchitecture means that any label can be its children
+      if (
+        parentLabelName in _xmlArchitecture &&
+        !_xmlArchitecture[parentLabelName].includes(labelName)
+      ) {
         _stopInfo.parentLabelName = parentLabelName
         _stopInfo.labelName = labelName
         _stopInfo.index = labelEndIndex + 1
@@ -26,35 +34,20 @@ const validate = () => {
         return
       }
 
-      if (labelName in _xmlArchitecture) {
-        // label have children
-        _labelNameStack.push(labelName)
-        _validateIndex = labelEndIndex + 1
-      } else {
-        // label is leaf
-        // find end label
-        const endLabelIndex = findEndLabel({ label: labelName, index: labelEndIndex + 1 })
-
-        // cannot find end label
-        if (endLabelIndex === -1) {
-          console.log('error')
-        }
-
-        const value = _originXml.substring(labelEndIndex + 1, endLabelIndex).trim()
-        // TODO: check value string
-        _validateIndex = endLabelIndex + 1
-        console.log(endLabelIndex, value)
-      }
+      // update stack
+      _labelNameStack.push(labelName)
     } else if (labelType === 'end') {
+      // update stack
       const topLabelName = _labelNameStack.pop()
+
+      // TODO: handle error
       if (topLabelName !== labelName) {
-        // TODO: handle error
         console.log('error!')
       }
-      _validateIndex = labelEndIndex + 1
-    } else {
-      _validateIndex = labelEndIndex + 1
     }
+
+    // update index
+    _validateIndex = labelEndIndex + 1
   }
 
   stopValidation({ status: 'success', text: '完成！' })
@@ -81,10 +74,6 @@ const continueValidate = () => {
 
   // ignore label
   _xmlArchitecture[_stopInfo.parentLabelName].push(_stopInfo.labelName)
-
-  // find end label as start index of validation
-  const endLabelIndex = findEndLabel({ label: _stopInfo.labelName, index: _stopInfo.index + 1 })
-  _validateIndex = endLabelIndex + 1
 
   // restart
   validate()

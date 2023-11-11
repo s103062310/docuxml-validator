@@ -10,16 +10,3 @@ const parseLabel = (labelStr) => {
   const labelName = result[0].replace('/', '')
   return { labelType, labelName }
 }
-
-/**
- * find start index of end label search from giving index
- * @param {object} input
- * @param {string} input.label label name
- * @param {number} input.index start searching index
- * @return {number} found index
- */
-const findEndLabel = ({ label, index }) => {
-  const str = _originXml.slice(index)
-  const indexInSlice = str.search(`<\\s*\/\\s*${label}\\s*>`)
-  return indexInSlice + index
-}

@@ -1,5 +1,6 @@
 /** @type {string} */
 let _originXml = ''
+let _xml = ''
 
 /** @type {string[]} */
 let _labelNameStack = []

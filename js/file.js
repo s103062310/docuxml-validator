@@ -27,6 +27,7 @@ const getDataFromXmlFile = (file) => {
   reader.onload = (event) => {
     _originXml = /** @type {string} */ (event.target.result)
     _validateIndex = _originXml.indexOf('<ThdlPrototypeExport', 0)
+    _xml = _originXml.substring(0, _validateIndex)
     addStatusRow()
     validate()
   }
