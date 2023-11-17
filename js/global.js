@@ -6,6 +6,9 @@ const _symbol = {
   '"': '&quot;',
 }
 
+/** @type {RegExp} regular expression of global illegal symbol  */
+const _illegalSymbol = new RegExp(/<|>|"|&(?!(?:amp|gt|lt|quot);)/g)
+
 /** @type {string} name of xml file */
 let _filename = 'validated'
 

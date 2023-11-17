@@ -94,9 +94,33 @@ a:focus {
   color: var(--color--white) !important;
 }
 
+.btn-outline {
+  background-color: var(--color--white);
+  color: var(--color--blue);
+  border: 1px solid var(--color--blue);
+}
+
+.btn-outline:hover,
+.btn-outline:active,
+.btn-outline:focus {
+  background-color: var(--color--white) !important;
+  color: var(--color--blue-dark) !important;
+  border: 1px solid var(--color--blue-dark);
+}
+
 .spinner-grow {
   --bs-spinner-width: 1rem;
   --bs-spinner-height: 1rem;
   --bs-spinner-animation-speed: 1s;
   color: var(--color--gray-light);
+  margin: 0.25rem 0;
+}
+
+.form-control {
+  display: initial;
+  width: 3.125rem;
+}
+
+.form-control.error {
+  border-color: var(--color--error);
 }

@@ -26,8 +26,10 @@ const addActionLabel = (text) => {
   $('.status-row:last-child').append(`<span class="label">${text}</span>`)
 }
 
+// For error "Cannot Identify Label"
+
 /**
- * show error solution
+ * message section
  */
 const showCannotIdentifyLabel = () => {
   const email = 'docusky.contact@gmail.com'
@@ -40,26 +42,86 @@ const showCannotIdentifyLabel = () => {
       <a href="mailto:${email}?subject=${subject}&body=${body}">${email}</a> 
       由專人協助。
     </div>
-    <div class="group" style="grid-template-columns: repeat(2, 1fr);">
-      <button class="btn" onclick="continueValidate()">略過並繼續</button>
+    <div class="group">
+      <button class="btn" onclick="handleIgnoreUnknownLabel()">略過並繼續</button>
       <button class="btn" onclick="endValidate()">結束</button>
     </div>
   `
   $('#detail').append(html)
 }
 
+// For error "Detect Specific Symbol"
+
+/**
+ * generate html of highlight block of specific symbol
+ * @param {object} input
+ * @param {string} input.id target index in symbol array of stop info
+ * @param {string} input.text text which will be displayed in highlight label
+ * @param {boolean} [input.isSolved] highlight style, normal or solved
+ * @returns {string} html of highlight block
+ */
+const highlightElement = ({ id, text, isSolved = false }) => {
+  const modifyBtn = `<button class="btn" onclick="showModifyUI(${id})">修改</button>`
+  const deleteBtn = `<button class="btn" onclick="handleDelete(${id})">刪除</button>`
+  const keepBtn = `<button class="btn" onclick="handleKeep(${id})">保留</button>`
+  const choices = `<div id="choices-${id}" class="choices" style="display: none">${modifyBtn}${deleteBtn}${keepBtn}</div>`
+  const highlight = `<div id="highlight-${id}" class="highlight${isSolved ? ' solved' : ''}" ${
+    isSolved ? '' : `onclick="$('#choices-${id}').toggle()"`
+  }>${text}${isSolved ? '' : choices}</div>`
+  return highlight
+}
+
+/**
+ * message section
+ */
 const showDetectSymbol = () => {
+  // TODO: 段落資訊
+  // TODO: 重設
   let text = _stopInfo.value
-  _stopInfo.symbol.reverse().forEach(({ index, target }) => {
+  _stopInfo.symbol.forEach(({ index, target }, id) => {
     const beforeStr = text.substring(0, index)
     const afterStr = text.substring(index + 1)
-    const highlight = `<span class="highlight">${_symbol[target]}</span>`
+    const highlight = highlightElement({ id, text: _symbol[target] })
     text = `${beforeStr}${highlight}${afterStr}`
   })
   const html = `
     <div class="msg-board">
       ${text.replace(/\n/g, '<br/>')}
     </div>
+    <div id="symbol-fin" class="field">
+      <div class="group">
+        <button class="btn" onclick="handleSymbolFinish()" onblur="handleSymbolBlur()">修正完成並繼續</button>
+        <button class="btn" onclick="endValidate()">結束</button>
+      </div>
+    </div>
   `
   $('#detail').append(html)
 }
+
+/**
+ * trigger when user choose to modify the specific symbol in text
+ * it will replace highlight block to modify ui
+ * @param {string} id target index in symbol array of stop info
+ */
+const showModifyUI = (id) => {
+  const index = parseInt(id)
+  const input = `<input id="modify-input-${id}" type="text" class="form-control modify" value="${_stopInfo.symbol[index].target}" onChange="handleChangeModifyInput(${id})">`
+  const finBtn = `<button class="btn modify" onclick="handleModify(${id})">確定</button>`
+  const cancelBtn = `<button class="btn btn-outline modify" onclick="handleCancelModify(${id})">取消</button>`
+  const modify = `<div class="modify-group">${input}${finBtn}${cancelBtn}</div>`
+  $(`#highlight-${id}`).replaceWith(`<div id="modify-${id}" class="field">${modify}</div>`)
+}
+
+/**
+ * generate html of error message
+ * @param {object} input
+ * @param {string} input.text error message which will be displayed
+ * @param {string} [input.iconStyle] custom style for icon
+ * @returns html of error message
+ */
+const errorElement = ({ text, iconStyle }) => `
+  <div class="error-msg">
+    <i class="bi bi-x-circle-fill" style="${iconStyle}"></i>
+    ${text}
+  </div>
+`
