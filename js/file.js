@@ -23,13 +23,12 @@ const getDataFromXmlFile = (file) => {
   const reader = new FileReader()
 
   /**
-   * callback after loading: save result into _originXml and start validating
+   * callback after loading: save result into _xml and start validating
    * @param {ProgressEvent<FileReader>} event
    */
   reader.onload = (event) => {
-    _originXml = /** @type {string} */ (event.target.result)
-    _validateIndex = _originXml.indexOf('<ThdlPrototypeExport', 0)
-    _xml = _originXml.substring(0, _validateIndex)
+    _xml = /** @type {string} */ (event.target.result)
+    _validateIndex = _xml.indexOf('<ThdlPrototypeExport', 0)
     _labelNameStack = []
     addStatusRow()
     validate()

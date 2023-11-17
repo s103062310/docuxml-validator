@@ -2,11 +2,11 @@
  * main validation loop
  */
 const validate = () => {
-  while (_validateIndex < _originXml.length) {
+  while (_validateIndex < _xml.length) {
     // find label
     // BUG: 若文本含有 < > 可能無法分辨是否真的為 label
-    const labelStartIndex = _originXml.indexOf('<', _validateIndex)
-    const labelEndIndex = _originXml.indexOf('>', labelStartIndex)
+    const labelStartIndex = _xml.indexOf('<', _validateIndex)
+    const labelEndIndex = _xml.indexOf('>', labelStartIndex)
 
     if (labelStartIndex === -1 || labelEndIndex === -1) {
       // cannot find anymore label
@@ -14,7 +14,7 @@ const validate = () => {
       break
     } else {
       // check string between last label and this label
-      const value = _originXml.substring(_validateIndex, labelStartIndex)
+      const value = _xml.substring(_validateIndex, labelStartIndex)
       const symbol = []
       let result
 
@@ -36,12 +36,11 @@ const validate = () => {
         return
       } else {
         // valid
-        _xml += value
       }
     }
 
     // parse label
-    const labelStr = _originXml.substring(labelStartIndex + 1, labelEndIndex).trim() // remove '<' & '>'
+    const labelStr = _xml.substring(labelStartIndex + 1, labelEndIndex).trim() // remove '<' & '>'
     const { labelType, labelName } = parseLabel(labelStr)
 
     if (labelType === 'start') {
@@ -77,7 +76,6 @@ const validate = () => {
     }
 
     // update
-    _xml += `<${labelStr}>`
     _validateIndex = labelEndIndex + 1
   }
 
@@ -217,9 +215,9 @@ const handleSymbolFinish = () => {
     // update xml
     _stopInfo.symbol.forEach(({ index, decision, result }) => {
       const position = _validateIndex + index
-      const beforeStr = _originXml.substring(0, position)
-      const afterStr = _originXml.substring(position + 1)
-      _originXml = beforeStr + result + afterStr
+      const beforeStr = _xml.substring(0, position)
+      const afterStr = _xml.substring(position + 1)
+      _xml = beforeStr + result + afterStr
       if (!actions.includes(decision)) {
         actions.push(decision)
       }

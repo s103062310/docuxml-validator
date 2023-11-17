@@ -12,10 +12,7 @@ const _illegalSymbol = new RegExp(/<|>|"|&(?!(?:amp|gt|lt|quot);)/g)
 /** @type {string} name of xml file */
 let _filename = 'validated'
 
-/** @type {string} xml before validation */
-let _originXml = ''
-
-/** @type {string} xml after validation */
+/** @type {string} xml string */
 let _xml = ''
 
 /** @type {string[]} stack which is used to check well-form structure */
