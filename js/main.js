@@ -22,8 +22,8 @@ const validate = () => {
         symbol.push({ index: _illegalSymbol.lastIndex - 1, target: result[0] })
       }
 
+      // invalid
       if (symbol.length > 0) {
-        // invalid
         symbol.reverse()
         _stopInfo = { value, symbol }
         stopValidation({
@@ -34,8 +34,6 @@ const validate = () => {
         })
         showDetectSymbol()
         return
-      } else {
-        // valid
       }
     }
 
@@ -47,19 +45,39 @@ const validate = () => {
       const stackLength = _labelNameStack.length
       const parentLabelName = stackLength > 0 ? _labelNameStack[stackLength - 1] : 'root'
 
-      // check label is a valid child of parent
-      // label not in _xmlArchitecture means that any label can be its children
-      if (
-        parentLabelName in _xmlArchitecture &&
-        !_xmlArchitecture[parentLabelName].includes(labelName)
-      ) {
-        _stopInfo = { parentLabelName, labelName }
-        stopValidation({
-          status: 'error',
-          text: `無法辨識標籤 ${_symbol['<']}${labelName}${_symbol['>']}`,
-        })
-        showCannotIdentifyLabel()
-        return
+      // check label is a DocuXml label
+      if (parentLabelName in _xmlArchitecture) {
+        // check label is a valid child of parent
+        const isLegal = _xmlArchitecture[parentLabelName].reduce((flag, label) => {
+          const regex = new RegExp(label)
+          return regex.test(labelName) || flag
+        }, false)
+        if (!isLegal) {
+          _stopInfo = { parentLabelName, labelName }
+          stopValidation({
+            status: 'error',
+            text: `無法辨識標籤 ${_symbol['<']}${labelName}${_symbol['>']}`,
+          })
+          showCannotIdentifyLabel()
+          return
+        }
+      } else {
+        // check for parent label not in _xmlArchitecture
+        if (labelName === 'a') {
+          // only custom metadata can have link
+          if (_labelNameStack[stackLength - 2] !== 'xml_metadata') {
+            // TODO: error
+            console.log(_labelNameStack)
+            return
+          }
+        } else {
+          _stopInfo = { parentLabelName, labelName }
+          stopValidation({
+            status: 'error',
+            text: `標籤 ${_symbol['<']}${parentLabelName}${_symbol['>']} 內不應存在其他標籤`,
+          })
+          return
+        }
       }
 
       _labelNameStack.push(labelName)
@@ -207,6 +225,7 @@ const handleSymbolFinish = () => {
     (result, { decision }) => result && Boolean(decision),
     true,
   )
+
   if (!isModifyAll) {
     $('#symbol-fin').append(errorElement({ text: '請修正完錯誤再繼續' }))
   } else {

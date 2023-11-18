@@ -40,7 +40,7 @@ const _metadata = [
 
 /** @enum {string[]} */
 const _xmlArchitecture = {
-  root: ['?xml', 'ThdlPrototypeExport'],
+  root: ['xml', 'ThdlPrototypeExport'],
   ThdlPrototypeExport: ['corpus', 'documents'],
   corpus: ['metadata_field_settings', 'feature_analysis', 'PageParameters'],
   metadata_field_settings: [..._metadata],
@@ -50,4 +50,7 @@ const _xmlArchitecture = {
   CorpusTrees: ['CatTree'],
   documents: ['document'],
   document: [..._metadata, 'xml_metadata', 'doc_content'],
+  xml_metadata: [..._metadata, 'Udef_.+'],
+  doc_content: ['Paragraph', 'MetaTags'],
+  MetaTags: ['Udef_.+'],
 }
