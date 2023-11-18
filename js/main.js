@@ -26,12 +26,7 @@ const validate = () => {
       if (symbol.length > 0) {
         symbol.reverse()
         _stopInfo = { value, symbol }
-        stopValidation({
-          status: 'error',
-          text: `偵測到特殊符號。${Object.values(_symbol).join(
-            '、',
-          )} 為 xml 格式中用來辨認標籤的符號，請點擊以下文本中標示出的符號做更改。`,
-        })
+        stopValidation({ status: 'error', text: '偵測到特殊符號' })
         showDetectSymbol()
         return
       }
@@ -76,6 +71,7 @@ const validate = () => {
             status: 'error',
             text: `標籤 ${_symbol['<']}${parentLabelName}${_symbol['>']} 內不應存在其他標籤`,
           })
+          // TODO: detail
           return
         }
       }

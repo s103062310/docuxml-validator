@@ -12,7 +12,7 @@ const addStatusRow = ({ status = 'loading', text = '驗證中...' } = {}) => {
   const html = `
     <div class="status-row" ${style}>
       ${icon}
-      <div>${text}</div>
+      <div class="status-row__text">${text}</div>
     </div>
   `
   $('#status').append(html)
@@ -23,7 +23,7 @@ const addStatusRow = ({ status = 'loading', text = '驗證中...' } = {}) => {
  * @param {string} text label text
  */
 const addActionLabel = (text) => {
-  $('.status-row:last-child').append(`<span class="label">${text}</span>`)
+  $('.status-row__text:last-child').append(`<span class="label">${text}</span>`)
 }
 
 // For error "Cannot Identify Label"
@@ -86,6 +86,10 @@ const showDetectSymbol = () => {
   })
   const html = `
     <div class="msg-board">
+      ${Object.values(_symbol).join(
+        '、',
+      )} 為 xml 格式中用來辨認標籤的符號，請點擊以下文本中標示出的符號做更改：
+      <div class="line"></div>
       ${text.replace(/\n/g, '<br/>')}
     </div>
     <div id="symbol-fin" class="field">
