@@ -15,15 +15,29 @@ const addStatusRow = ({ status = 'loading', text = '驗證中...' } = {}) => {
       <div class="status-row__text">${text}</div>
     </div>
   `
-  $('#status').append(html)
+  $('#content').append(html)
 }
 
 /**
- * add label at the end of the last status row
- * @param {string} text label text
+ * add labels adn collapse button at the end of the last status row
+ * @param {string[]} texts label text
  */
-const addActionLabel = (text) => {
-  $('.status-row__text:last-child').append(`<span class="label">${text}</span>`)
+const addActionLabelsAndCollapse = (texts) => {
+  const statusRows = $('.status-row__text')
+  const labels = texts.map((text) => `<span class="label">${text}</span>`).join('')
+  const collapse = `<i id="error-${_errorNum}-btn" class="collapse-btn bi bi-chevron-compact-down" onclick="handleCollapse(${_errorNum})"></i>`
+  $(statusRows[statusRows.length - 1]).append(labels + collapse)
+  $(`#error-${_errorNum}`).toggle() // close finished error detail
+}
+
+/**
+ * toggle corresponded error detail
+ * @param {number} id error id / index
+ */
+const handleCollapse = (id) => {
+  $(`#error-${id}`).toggle()
+  $(`#error-${id}-btn`).toggleClass('bi-chevron-compact-up')
+  $(`#error-${id}-btn`).toggleClass('bi-chevron-compact-down')
 }
 
 // For error "Cannot Identify Label"
@@ -37,7 +51,7 @@ const showCannotIdentifyLabel = () => {
   const body =
     '感謝您使用 DocuSky，為了能夠更迅速地協助您建庫，請盡可能詳細地描述操作過程與遇到的問題，並提供發生錯誤的螢幕截圖與 xml 檔案。'
   const html = `
-    <div class="msg-board">
+    <div id="error-${_errorNum}" class="msg-board">
       若無法順利建庫，請螢幕截圖錯誤訊息並附上 xml 檔案，來信 
       <a href="mailto:${email}?subject=${subject}&body=${body}">${email}</a> 
       由專人協助。
@@ -47,7 +61,7 @@ const showCannotIdentifyLabel = () => {
       <button class="btn" onclick="endValidate()">結束</button>
     </div>
   `
-  $('#detail').append(html)
+  $('#content').append(`<div class="detail">${html}</div>`)
 }
 
 // For error "Detect Specific Symbol"
@@ -85,7 +99,7 @@ const showDetectSymbol = () => {
     text = `${beforeStr}${highlight}${afterStr}`
   })
   const html = `
-    <div class="msg-board">
+    <div id="error-${_errorNum}" class="msg-board">
       ${Object.values(_symbol).join(
         '、',
       )} 為 xml 格式中用來辨認標籤的符號，請點擊以下文本中標示出的符號做更改：
@@ -99,7 +113,7 @@ const showDetectSymbol = () => {
       </div>
     </div>
   `
-  $('#detail').append(html)
+  $('#content').append(`<div class="detail">${html}</div>`)
 }
 
 /**

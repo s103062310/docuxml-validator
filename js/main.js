@@ -25,6 +25,7 @@ const validate = () => {
       // invalid
       if (symbol.length > 0) {
         symbol.reverse()
+        _errorNum += 1
         _stopInfo = { value, symbol }
         stopValidation({ status: 'error', text: '偵測到特殊符號' })
         showDetectSymbol()
@@ -48,6 +49,7 @@ const validate = () => {
           return regex.test(labelName) || flag
         }, false)
         if (!isLegal) {
+          _errorNum += 1
           _stopInfo = { parentLabelName, labelName }
           stopValidation({
             status: 'error',
@@ -66,6 +68,7 @@ const validate = () => {
             return
           }
         } else {
+          _errorNum += 1
           _stopInfo = { parentLabelName, labelName }
           stopValidation({
             status: 'error',
@@ -111,7 +114,7 @@ const stopValidation = (row) => {
  */
 const endValidate = () => {
   // reset ui
-  $('#detail').empty()
+  $('#content .group').remove()
   $('#upload-btn').show()
 
   // download result
@@ -130,8 +133,8 @@ const handleIgnoreUnknownLabel = () => {
   _xmlArchitecture[_stopInfo.parentLabelName].push(_stopInfo.labelName)
 
   // reset ui
-  $('#detail').empty()
-  addActionLabel('略過')
+  $('#content .group').remove()
+  addActionLabelsAndCollapse(['略過'])
   addStatusRow()
 
   // restart
@@ -239,8 +242,8 @@ const handleSymbolFinish = () => {
     })
 
     // reset ui
-    $('#detail').empty()
-    actions.forEach((action) => addActionLabel(action))
+    $('#content .group').remove()
+    addActionLabelsAndCollapse(actions)
     addStatusRow()
 
     // restart

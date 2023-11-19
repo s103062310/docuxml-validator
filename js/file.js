@@ -12,7 +12,7 @@ $('#upload-input').on('change', (event) => {
   $(inputElement).val('') // clear uploaded file
   $('#upload-btn').hide()
   $('#download-btn').hide()
-  $('#status').empty()
+  $('#content').empty()
 })
 
 /**

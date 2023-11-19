@@ -21,6 +21,9 @@ let _labelNameStack = []
 /** @type {number} validation progress */
 let _validateIndex = 0
 
+/** @type {number} accumulated error number */
+let _errorNum = 0
+
 /** @type {any} error information when validation is interrupted */
 let _stopInfo = {}
 
