@@ -18,6 +18,19 @@ const addStatusRow = ({ status = 'loading', text = '驗證中...' } = {}) => {
   $('#content').append(html)
 }
 
+const addErrorDetail = ({ content }) => {
+  const html = `
+    <div id="error-${_errorNum}" class="msg-board">${content}</div>
+    <div id="error-${_errorNum}-fin" class="field">
+      <div class="group">
+        <button class="btn" onclick="handleSymbolFinish()" onblur="handleBlurContinue()">修正完成並繼續</button>
+        <button class="btn" onclick="endValidate()">結束</button>
+      </div>
+    </div>
+  `
+  $('#content').append(`<div class="detail">${html}</div>`)
+}
+
 /**
  * add labels adn collapse button at the end of the last status row
  * @param {string[]} texts label text
@@ -25,20 +38,68 @@ const addStatusRow = ({ status = 'loading', text = '驗證中...' } = {}) => {
 const addActionLabelsAndCollapse = (texts) => {
   const statusRows = $('.status-row__text')
   const labels = texts.map((text) => `<span class="label">${text}</span>`).join('')
-  const collapse = `<i id="error-${_errorNum}-btn" class="collapse-btn bi bi-chevron-compact-down" onclick="handleCollapse(${_errorNum})"></i>`
+  const collapse = `<i id="error-${_errorNum}-toggle" class="collapse-btn bi bi-chevron-compact-down" onclick="handleCollapse(${_errorNum})"></i>`
   $(statusRows[statusRows.length - 1]).append(labels + collapse)
   $(`#error-${_errorNum}`).toggle() // close finished error detail
 }
 
+// Components
+
 /**
- * toggle corresponded error detail
- * @param {number} id error id / index
+ * generate html of highlight block of specific symbol
+ * @param {Object} input
+ * @param {number} input.index target index in symbol array of stop info
+ * @param {string} input.text text which will be displayed in highlight label
+ * @param {boolean} [input.isSolved] highlight style, normal or solved
+ * @returns {string} html of highlight block
  */
-const handleCollapse = (id) => {
-  $(`#error-${id}`).toggle()
-  $(`#error-${id}-btn`).toggleClass('bi-chevron-compact-up')
-  $(`#error-${id}-btn`).toggleClass('bi-chevron-compact-down')
+const highlightElement = ({ index, text, isSolved = false }) => {
+  // html need prevent '\n'
+  const modifyBtn = `<button class="btn" onclick="handleShowModify(${index})">修改</button>`
+  const deleteBtn = `<button class="btn" onclick="handleDelete(${index})">刪除</button>`
+  const keepBtn = `<button class="btn" onclick="handleKeep(${index})">保留</button>`
+  const choices = `<div class="choices" style="display: none">${modifyBtn}${deleteBtn}${keepBtn}</div>`
+  const id = `error-${_errorNum}__highlight-${index}`
+  const onclick = `onclick="$(this).find('.choices').toggle()"`
+  return isSolved
+    ? `<div id="${id}" class="highlight solved">${text}</div>`
+    : `<div id="${id}" class="highlight" ${onclick}>${text}${choices}</div>`
 }
+
+/**
+ * generate html of modify ui for highlight target
+ * @param {number} index target index in symbol array of stop info
+ * @returns {string} html of modify ui
+ */
+const modifyElement = (index) => {
+  const input = `
+    <input 
+      id="modify-${index}__input" 
+      class="form-control modify" 
+      type="text" 
+      value="${_stopInfo.symbol[index].target}" 
+      onChange="handleChangeModifyInput(${index})"
+    >
+  `
+  const finBtn = `<button class="btn modify" onclick="handleModify(${index})">確定</button>`
+  const cancelBtn = `<button class="btn btn-outline modify" onclick="handleCancelModify(${index})">取消</button>`
+  const modify = `<div class="modify-group">${input}${finBtn}${cancelBtn}</div>`
+  return `<div id="modify-${index}" class="field">${modify}</div>`
+}
+
+/**
+ * generate html of error message
+ * @param {Object} input
+ * @param {string} input.text error message which will be displayed
+ * @param {string} [input.iconStyle] custom style for icon
+ * @returns html of error message
+ */
+const errorElement = ({ text, iconStyle }) => `
+  <div class="error-msg">
+    <i class="bi bi-x-circle-fill" style="${iconStyle}"></i>
+    ${text}
+  </div>
+`
 
 // For error "Cannot Identify Label"
 
@@ -67,79 +128,24 @@ const showCannotIdentifyLabel = () => {
 // For error "Detect Specific Symbol"
 
 /**
- * generate html of highlight block of specific symbol
- * @param {Object} input
- * @param {number} input.id target index in symbol array of stop info
- * @param {string} input.text text which will be displayed in highlight label
- * @param {boolean} [input.isSolved] highlight style, normal or solved
- * @returns {string} html of highlight block
- */
-const highlightElement = ({ id, text, isSolved = false }) => {
-  const modifyBtn = `<button class="btn" onclick="showModifyUI(${id})">修改</button>`
-  const deleteBtn = `<button class="btn" onclick="handleDelete(${id})">刪除</button>`
-  const keepBtn = `<button class="btn" onclick="handleKeep(${id})">保留</button>`
-  const choices = `<div id="choices-${id}" class="choices" style="display: none">${modifyBtn}${deleteBtn}${keepBtn}</div>`
-  const highlight = `<div id="highlight-${id}" class="highlight${isSolved ? ' solved' : ''}" ${
-    isSolved ? '' : `onclick="$('#choices-${id}').toggle()"`
-  }>${text}${isSolved ? '' : choices}</div>`
-  return highlight
-}
-
-/**
  * message section
  */
 const showDetectSymbol = () => {
   // TODO: 段落資訊
-  // TODO: 重設
+  // TODO: 重設、全部刪除、全部保留
   let text = _stopInfo.value
-  _stopInfo.symbol.forEach(({ index, target }, id) => {
+  _stopInfo.symbol.forEach(({ index, target }, i) => {
     const beforeStr = text.substring(0, index)
     const afterStr = text.substring(index + 1)
-    const highlight = highlightElement({ id, text: target })
+    const highlight = highlightElement({ index: i, text: target })
     text = `${beforeStr}${highlight}${afterStr}`
   })
-  const html = `
-    <div id="error-${_errorNum}" class="msg-board">
-      ${Object.keys(_symbol).join(
-        '、',
-      )} 為 xml 格式中用來辨認標籤的符號，請點擊以下文本中標示出的符號做更改：
-      <div class="line"></div>
-      ${text.replace(/\n/g, '<br/>')}
-    </div>
-    <div id="symbol-fin" class="field">
-      <div class="group">
-        <button class="btn" onclick="handleSymbolFinish()" onblur="handleSymbolBlur()">修正完成並繼續</button>
-        <button class="btn" onclick="endValidate()">結束</button>
-      </div>
-    </div>
+  const content = `
+    ${Object.keys(_symbol).join(
+      '、',
+    )} 為 xml 格式中用來辨認標籤的符號，請點擊以下文本中標示出的符號做更改：
+    <div class="line"></div>
+    ${text.replace(/\n/g, '<br/>')}
   `
-  $('#content').append(`<div class="detail">${html}</div>`)
+  addErrorDetail({ content })
 }
-
-/**
- * trigger when user choose to modify the specific symbol in text
- * it will replace highlight block to modify ui
- * @param {string} id target index in symbol array of stop info
- */
-const showModifyUI = (id) => {
-  const index = parseInt(id)
-  const input = `<input id="modify-input-${id}" type="text" class="form-control modify" value="${_stopInfo.symbol[index].target}" onChange="handleChangeModifyInput(${id})">`
-  const finBtn = `<button class="btn modify" onclick="handleModify(${id})">確定</button>`
-  const cancelBtn = `<button class="btn btn-outline modify" onclick="handleCancelModify(${id})">取消</button>`
-  const modify = `<div class="modify-group">${input}${finBtn}${cancelBtn}</div>`
-  $(`#highlight-${id}`).replaceWith(`<div id="modify-${id}" class="field">${modify}</div>`)
-}
-
-/**
- * generate html of error message
- * @param {Object} input
- * @param {string} input.text error message which will be displayed
- * @param {string} [input.iconStyle] custom style for icon
- * @returns html of error message
- */
-const errorElement = ({ text, iconStyle }) => `
-  <div class="error-msg">
-    <i class="bi bi-x-circle-fill" style="${iconStyle}"></i>
-    ${text}
-  </div>
-`

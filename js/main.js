@@ -15,16 +15,7 @@ const validate = () => {
     } else {
       // check string between last label and this label
       const value = _xml.substring(_validateIndex, _validateIndex + result.index)
-      const symbol = findAllByRegex({ value, regex: _illegalSymbolRegex })
-
-      // invalid
-      if (symbol.length > 0) {
-        _errorNum += 1
-        _stopInfo = { value, symbol }
-        stopValidation({ status: 'error', text: '偵測到特殊符號' })
-        showDetectSymbol()
-        return
-      }
+      if (checkText(value)) return
     }
 
     // parse label
@@ -117,6 +108,24 @@ const endValidate = () => {
   // downloadResult()
 }
 
+// For checking
+
+/**
+ * check if there are illegal symbols in string
+ * @param {string} value checked target
+ * @returns {boolean} is error or not
+ */
+const checkText = (value) => {
+  const symbol = findAllByRegex({ value, regex: _illegalSymbolRegex })
+  if (symbol.length > 0) {
+    _errorNum += 1
+    _stopInfo = { value, symbol }
+    stopValidation({ status: 'error', text: '偵測到特殊符號' })
+    showDetectSymbol()
+  }
+  return symbol.length > 0
+}
+
 // For error "Cannot Identify Label"
 
 /**
@@ -140,79 +149,6 @@ const handleIgnoreUnknownLabel = () => {
 // For error "Detect Specific Symbol"
 
 /**
- * trigger when user edit in modify input
- * @param {string} id target index in symbol array of stop info
- */
-const handleChangeModifyInput = (id) => {
-  $(`#modify-input-${id}`).removeClass('error')
-  $(`#modify-${id} > .error-msg`).remove()
-}
-
-/**
- * trigger when user finish the modify procedure
- * @param {string} id target index in symbol array of stop info
- */
-const handleModify = (id) => {
-  const value = /** @type {string} */ ($(`#modify-input-${id}`).val())
-  if (_illegalSymbolRegex.test(value)) {
-    $(`#modify-input-${id}`).addClass('error')
-    $(`#modify-${id}`).append(
-      errorElement({
-        text: `請勿使用 ${Object.keys(_symbol).join('、')} 等符號`,
-        iconStyle: 'margin-left: 0.25rem',
-      }),
-    )
-  } else if (value === '') {
-    $(`#modify-input-${id}`).addClass('error')
-    $(`#modify-${id}`).append(
-      errorElement({
-        text: '必填',
-        iconStyle: 'margin-left: 0.25rem',
-      }),
-    )
-  } else {
-    const index = parseInt(id)
-    _stopInfo.symbol[index].decision = '修改'
-    _stopInfo.symbol[index].result = value
-    $(`#modify-${id}`).replaceWith(highlightElement({ id, text: value, isSolved: true }))
-  }
-}
-
-/**
- * trigger when user cancel the modify procedure
- * @param {string} id target index in symbol array of stop info
- */
-const handleCancelModify = (id) => {
-  const target = _stopInfo.symbol[id].target
-  const text = _symbol[target]
-  $(`#modify-${id}`).replaceWith(highlightElement({ id, text }))
-}
-
-/**
- * trigger when user choose to delete the specific symbol in text
- * @param {string} id target index in symbol array of stop info
- */
-const handleDelete = (id) => {
-  const index = parseInt(id)
-  _stopInfo.symbol[index].decision = '刪除'
-  _stopInfo.symbol[index].result = ''
-  $(`#highlight-${id}`).remove()
-}
-
-/**
- * trigger when user choose to keep the specific symbol in text
- * @param {string} id target index in symbol array of stop info
- */
-const handleKeep = (id) => {
-  const index = parseInt(id)
-  _stopInfo.symbol[index].decision = '保留'
-  _stopInfo.symbol[index].result = _symbol[_stopInfo.symbol[index].target]
-  $(`#highlight-${id}`).addClass('solved')
-  $(`#highlight-${id}`).prop('onclick', null).off('click')
-  $(`#choices-${id}`).remove()
-}
-
-/**
  * trigger when user click finish button in the end of this error section
  */
 const handleSymbolFinish = () => {
@@ -222,7 +158,7 @@ const handleSymbolFinish = () => {
   )
 
   if (!isModifyAll) {
-    $('#symbol-fin').append(errorElement({ text: '請修正完錯誤再繼續' }))
+    $(`#error-${_errorNum}-fin`).append(errorElement({ text: '請修正完錯誤再繼續' }))
   } else {
     const actions = []
 
@@ -245,11 +181,4 @@ const handleSymbolFinish = () => {
     // restart
     validate()
   }
-}
-
-/**
- * clean error message of finish button
- */
-const handleSymbolBlur = () => {
-  $('#symbol-fin .error-msg').remove()
 }
