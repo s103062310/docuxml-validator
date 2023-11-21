@@ -12,7 +12,7 @@ const handleCollapse = (id) => {
  * clean error message of continue button in error detail
  */
 const handleBlurContinue = () => {
-  $(`#error-${_errorNum}-fin .error-msg`).remove()
+  $(`#error-${_errorNum}__fin .error-msg`).remove()
 }
 
 // For highlight choices
@@ -31,8 +31,8 @@ const handleShowModify = (index) => {
  * @param {number} index target index in symbol array of stop info
  */
 const handleDelete = (index) => {
-  _stopInfo.symbol[index].decision = '刪除'
-  _stopInfo.symbol[index].result = ''
+  _stopInfo.highlights[index].decision = '刪除'
+  _stopInfo.highlights[index].result = ''
   const highlight = highlightElement({ index, text: '&emsp;', isSolved: true })
   $(`#error-${_errorNum}__highlight-${index}`).replaceWith(highlight)
 }
@@ -42,9 +42,9 @@ const handleDelete = (index) => {
  * @param {number} index target index in symbol array of stop info
  */
 const handleKeep = (index) => {
-  const result = _symbol[_stopInfo.symbol[index].target]
-  _stopInfo.symbol[index].decision = '保留'
-  _stopInfo.symbol[index].result = result
+  const result = _symbol[_stopInfo.highlights[index].target]
+  _stopInfo.highlights[index].decision = '保留'
+  _stopInfo.highlights[index].result = result
   const highlight = highlightElement({ index, text: result, isSolved: true })
   $(`#error-${_errorNum}__highlight-${index}`).replaceWith(highlight)
 }
@@ -66,7 +66,7 @@ const handleChangeModifyInput = (index) => {
  * @param {number} index target index in symbol array of stop info
  */
 const handleCancelModify = (index) => {
-  const text = _stopInfo.symbol[index].target
+  const text = _stopInfo.highlights[index].target
   const highlight = highlightElement({ index, text })
   $(`#modify-${index}`).replaceWith(highlight)
 }
@@ -94,8 +94,8 @@ const handleModify = (index) => {
     $(inputId).addClass('error')
     $(id).append(error)
   } else {
-    _stopInfo.symbol[index].decision = '修改'
-    _stopInfo.symbol[index].result = value
+    _stopInfo.highlights[index].decision = '修改'
+    _stopInfo.highlights[index].result = value
     const highlight = highlightElement({ index, text: value, isSolved: true })
     $(id).replaceWith(highlight)
   }

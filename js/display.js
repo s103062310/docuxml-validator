@@ -21,9 +21,9 @@ const addStatusRow = ({ status = 'loading', text = '驗證中...' } = {}) => {
 const addErrorDetail = ({ content }) => {
   const html = `
     <div id="error-${_errorNum}" class="msg-board">${content}</div>
-    <div id="error-${_errorNum}-fin" class="field">
+    <div id="error-${_errorNum}__fin" class="field">
       <div class="group">
-        <button class="btn" onclick="handleSymbolFinish()" onblur="handleBlurContinue()">修正完成並繼續</button>
+        <button class="btn" onclick="handleFinishDetectSymbol()" onblur="handleBlurContinue()">修正完成並繼續</button>
         <button class="btn" onclick="endValidate()">結束</button>
       </div>
     </div>
@@ -77,7 +77,7 @@ const modifyElement = (index) => {
       id="modify-${index}__input" 
       class="form-control modify" 
       type="text" 
-      value="${_stopInfo.symbol[index].target}" 
+      value="${_stopInfo.highlights[index].target}" 
       onChange="handleChangeModifyInput(${index})"
     >
   `
@@ -134,7 +134,7 @@ const showDetectSymbol = () => {
   // TODO: 段落資訊
   // TODO: 重設、全部刪除、全部保留
   let text = _stopInfo.value
-  _stopInfo.symbol.forEach(({ index, target }, i) => {
+  _stopInfo.highlights.forEach(({ index, target }, i) => {
     const beforeStr = text.substring(0, index)
     const afterStr = text.substring(index + 1)
     const highlight = highlightElement({ index: i, text: target })

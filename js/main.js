@@ -116,21 +116,20 @@ const endValidate = () => {
  * @returns {boolean} is error or not
  */
 const checkText = (value) => {
-  const symbol = findAllByRegex({ value, regex: _illegalSymbolRegex })
-  if (symbol.length > 0) {
+  const highlights = findAllByRegex({ value, regex: _illegalSymbolRegex })
+  if (highlights.length > 0) {
     _errorNum += 1
-    _stopInfo = { value, symbol }
+    _stopInfo = { value, highlights }
     stopValidation({ status: 'error', text: '偵測到特殊符號' })
     showDetectSymbol()
   }
-  return symbol.length > 0
+  return highlights.length > 0
 }
 
-// For error "Cannot Identify Label"
+// For finishing error
 
 /**
  * trigger when user decide to ignore this error
- * and continue validate from recorded stop point
  */
 const handleIgnoreUnknownLabel = () => {
   // TODO: hint modal
@@ -146,24 +145,23 @@ const handleIgnoreUnknownLabel = () => {
   validate()
 }
 
-// For error "Detect Specific Symbol"
-
 /**
  * trigger when user click finish button in the end of this error section
  */
-const handleSymbolFinish = () => {
-  const isModifyAll = _stopInfo.symbol.reduce(
+const handleFinishDetectSymbol = () => {
+  const isModifyAll = _stopInfo.highlights.reduce(
     (result, { decision }) => result && Boolean(decision),
     true,
   )
 
   if (!isModifyAll) {
-    $(`#error-${_errorNum}-fin`).append(errorElement({ text: '請修正完錯誤再繼續' }))
+    const error = errorElement({ text: '請修正完錯誤再繼續' })
+    $(`#error-${_errorNum}__fin`).append(error)
   } else {
     const actions = []
 
     // update xml
-    _stopInfo.symbol.forEach(({ index, decision, result }) => {
+    _stopInfo.highlights.forEach(({ index, decision, result }) => {
       const position = _validateIndex + index
       const beforeStr = _xml.substring(0, position)
       const afterStr = _xml.substring(position + 1)
@@ -174,7 +172,7 @@ const handleSymbolFinish = () => {
     })
 
     // reset ui
-    $('#content .group').remove()
+    $(`#error-${_errorNum}__fin`).remove()
     addActionLabelsAndCollapse(actions)
     addStatusRow()
 

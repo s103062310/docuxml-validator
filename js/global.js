@@ -28,7 +28,10 @@ let _validateIndex = 0
 let _errorNum = 0
 
 /** @type {any} error information when validation is interrupted */
-let _stopInfo = {}
+let _stopInfo = {
+  value: '', // the whole substring which contains errors
+  highlights: [], // info for each highlights
+}
 
 // self defined data structure
 
