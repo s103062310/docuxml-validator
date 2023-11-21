@@ -7,7 +7,10 @@ const _symbol = {
 }
 
 /** @type {RegExp} regular expression of global illegal symbol  */
-const _illegalSymbol = new RegExp(/<|>|"|&(?!(?:amp|gt|lt|quot);)/g)
+const _illegalSymbolRegex = new RegExp(/<|>|"|&(?!(?:amp|gt|lt|quot);)/g)
+
+/** @type {RegExp} regular expression of label */
+const _labelRegex = new RegExp(/<\s*\/?\s*[a-zA-Z0-9_]+(\s+[a-zA-Z0-9_]+="[^"]+")*\s*\/?\s*>/g)
 
 /** @type {string} name of xml file */
 let _filename = 'validated'
@@ -39,4 +42,10 @@ let _stopInfo = {}
  * @typedef {Object} StatusRow
  * @property {('loading' | 'success' | 'error')} [status] displayed type of the row
  * @property {string} [text] custom message
+ */
+
+/**
+ * @typedef {Object} SearchResult
+ * @property {number} index index of target in original string
+ * @property {string} target found target which matches pattern
  */

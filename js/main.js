@@ -4,27 +4,21 @@
 const validate = () => {
   while (_validateIndex < _xml.length) {
     // find label
-    // BUG: 若文本含有 < > 可能無法分辨是否真的為 label
-    const labelStartIndex = _xml.indexOf('<', _validateIndex)
-    const labelEndIndex = _xml.indexOf('>', labelStartIndex)
+    _labelRegex.lastIndex = 0
+    const remainXml = _xml.substring(_validateIndex)
+    const result = _labelRegex.exec(remainXml)
 
-    if (labelStartIndex === -1 || labelEndIndex === -1) {
+    if (result === null) {
       // cannot find anymore label
       // TODO: check remaining string
       break
     } else {
       // check string between last label and this label
-      const value = _xml.substring(_validateIndex, labelStartIndex)
-      const symbol = []
-      let result
-
-      while ((result = _illegalSymbol.exec(value)) !== null) {
-        symbol.push({ index: _illegalSymbol.lastIndex - 1, target: result[0] })
-      }
+      const value = _xml.substring(_validateIndex, _validateIndex + result.index)
+      const symbol = findAllByRegex({ value, regex: _illegalSymbolRegex })
 
       // invalid
       if (symbol.length > 0) {
-        symbol.reverse()
         _errorNum += 1
         _stopInfo = { value, symbol }
         stopValidation({ status: 'error', text: '偵測到特殊符號' })
@@ -34,7 +28,7 @@ const validate = () => {
     }
 
     // parse label
-    const labelStr = _xml.substring(labelStartIndex + 1, labelEndIndex).trim() // remove '<' & '>'
+    const labelStr = result[0].slice(1, -1).trim() // remove '<' & '>'
     const { labelType, labelName } = parseLabel(labelStr)
 
     if (labelType === 'start') {
@@ -48,6 +42,7 @@ const validate = () => {
           const regex = new RegExp(label)
           return regex.test(labelName) || flag
         }, false)
+
         if (!isLegal) {
           _errorNum += 1
           _stopInfo = { parentLabelName, labelName }
@@ -69,7 +64,7 @@ const validate = () => {
           }
         } else {
           _errorNum += 1
-          _stopInfo = { parentLabelName, labelName }
+          _stopInfo = { parentLabelName }
           stopValidation({
             status: 'error',
             text: `標籤 ${_symbol['<']}${parentLabelName}${_symbol['>']} 內不應存在其他標籤`,
@@ -93,7 +88,7 @@ const validate = () => {
     }
 
     // update
-    _validateIndex = labelEndIndex + 1
+    _validateIndex = _validateIndex + result.index + result[0].length
   }
 
   stopValidation({ status: 'success', text: '完成！' })
@@ -119,7 +114,7 @@ const endValidate = () => {
 
   // download result
   $('#download-btn').show()
-  downloadResult()
+  // downloadResult()
 }
 
 // For error "Cannot Identify Label"
@@ -129,6 +124,7 @@ const endValidate = () => {
  * and continue validate from recorded stop point
  */
 const handleIgnoreUnknownLabel = () => {
+  // TODO: hint modal
   // ignore label
   _xmlArchitecture[_stopInfo.parentLabelName].push(_stopInfo.labelName)
 
@@ -158,7 +154,7 @@ const handleChangeModifyInput = (id) => {
  */
 const handleModify = (id) => {
   const value = /** @type {string} */ ($(`#modify-input-${id}`).val())
-  if (_illegalSymbol.test(value)) {
+  if (_illegalSymbolRegex.test(value)) {
     $(`#modify-input-${id}`).addClass('error')
     $(`#modify-${id}`).append(
       errorElement({

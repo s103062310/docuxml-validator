@@ -10,3 +10,20 @@ const parseLabel = (labelStr) => {
   const labelName = result[0].replace('/', '')
   return { labelType, labelName }
 }
+
+/**
+ * find all targets in string with pattern
+ * @param {Object} input
+ * @param {string} input.value string which will be searched
+ * @param {RegExp} input.regex target pattern which is wanted
+ * @return {SearchResult[]} targets array
+ */
+const findAllByRegex = ({ value, regex }) => {
+  const targets = []
+  let result
+  while ((result = regex.exec(value)) !== null) {
+    targets.push({ index: result.index, target: result[0] })
+  }
+  targets.reverse()
+  return targets
+}

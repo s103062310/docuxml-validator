@@ -68,8 +68,8 @@ const showCannotIdentifyLabel = () => {
 
 /**
  * generate html of highlight block of specific symbol
- * @param {object} input
- * @param {string} input.id target index in symbol array of stop info
+ * @param {Object} input
+ * @param {number} input.id target index in symbol array of stop info
  * @param {string} input.text text which will be displayed in highlight label
  * @param {boolean} [input.isSolved] highlight style, normal or solved
  * @returns {string} html of highlight block
@@ -95,12 +95,12 @@ const showDetectSymbol = () => {
   _stopInfo.symbol.forEach(({ index, target }, id) => {
     const beforeStr = text.substring(0, index)
     const afterStr = text.substring(index + 1)
-    const highlight = highlightElement({ id, text: _symbol[target] })
+    const highlight = highlightElement({ id, text: target })
     text = `${beforeStr}${highlight}${afterStr}`
   })
   const html = `
     <div id="error-${_errorNum}" class="msg-board">
-      ${Object.values(_symbol).join(
+      ${Object.keys(_symbol).join(
         '、',
       )} 為 xml 格式中用來辨認標籤的符號，請點擊以下文本中標示出的符號做更改：
       <div class="line"></div>
@@ -132,7 +132,7 @@ const showModifyUI = (id) => {
 
 /**
  * generate html of error message
- * @param {object} input
+ * @param {Object} input
  * @param {string} input.text error message which will be displayed
  * @param {string} [input.iconStyle] custom style for icon
  * @returns html of error message
