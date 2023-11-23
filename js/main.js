@@ -20,7 +20,9 @@ const validate = () => {
 
     // parse label
     const labelStr = result[0].slice(1, -1).trim() // remove '<' & '>'
-    const { labelType, labelName } = parseLabel(labelStr)
+    const label = parseLabel(labelStr)
+    const { labelType, labelName } = label
+    if (checkLabel(label)) return
 
     if (labelType === 'start') {
       const stackLength = _labelNameStack.length
@@ -87,7 +89,7 @@ const validate = () => {
 }
 
 /**
- * stop validation
+ * interrupt validation procedure
  * @param {StatusRow} row row data which is going to replace loading
  */
 const stopValidation = (row) => {
@@ -96,11 +98,25 @@ const stopValidation = (row) => {
 }
 
 /**
+ * continue validation procedure from break point
+ * @param {string[]} actions action labels text
+ */
+const continueValidation = (actions) => {
+  // reset ui
+  $(`#error-${_errorNum}__fin`).remove()
+  addActionLabelsAndCollapse(actions)
+  addStatusRow()
+
+  // restart
+  validate()
+}
+
+/**
  * end the whole validate procedure
  */
 const endValidate = () => {
   // reset ui
-  $('#content .group').remove()
+  $(`#error-${_errorNum}__fin`).remove()
   $('#upload-btn').show()
 
   // download result
@@ -113,7 +129,7 @@ const endValidate = () => {
 /**
  * check if there are illegal symbols in string
  * @param {string} value checked target
- * @returns {boolean} is error or not
+ * @returns {boolean} true if string has illegal symbols
  */
 const checkText = (value) => {
   const highlights = findAllByRegex({ value, regex: _illegalSymbolRegex })
@@ -126,28 +142,43 @@ const checkText = (value) => {
   return highlights.length > 0
 }
 
-// For finishing error
-
 /**
- * trigger when user decide to ignore this error
+ * check if label is DocuXML label
+ * @param {Label} label checked target
+ * @returns {boolean} true if label is not DocuXML label
  */
-const handleIgnoreUnknownLabel = () => {
-  // TODO: hint modal
-  // ignore label
-  _xmlArchitecture[_stopInfo.parentLabelName].push(_stopInfo.labelName)
+const checkLabel = (label) => {
+  // TODO: check attribute?
 
-  // reset ui
-  $('#content .group').remove()
-  addActionLabelsAndCollapse(['略過'])
-  addStatusRow()
+  const isDocuLabel = _allDocuLabel.reduce((flag, docuLabel) => {
+    const regex = new RegExp(docuLabel)
+    return regex.test(label.labelName) || flag
+  }, false)
 
-  // restart
-  validate()
+  if (!isDocuLabel) {
+    _errorNum += 1
+    // _stopInfo = { value, highlights }
+    stopValidation({
+      status: 'error',
+      text: `無法辨識標籤 ${_symbol['<']}${label.labelName}${_symbol['>']}`,
+    })
+    showCannotIdentifyLabel()
+    return true
+  }
+
+  return false
 }
 
-/**
- * trigger when user click finish button in the end of this error section
- */
+// For finishing error
+
+const handleFinishCannotIdentifyLabel = () => {
+  // TODO: hint modal
+  // ignore label
+  // _xmlArchitecture[_stopInfo.parentLabelName].push(_stopInfo.labelName)
+
+  continueValidation(['略過'])
+}
+
 const handleFinishDetectSymbol = () => {
   const isModifyAll = _stopInfo.highlights.reduce(
     (result, { decision }) => result && Boolean(decision),
@@ -171,12 +202,6 @@ const handleFinishDetectSymbol = () => {
       }
     })
 
-    // reset ui
-    $(`#error-${_errorNum}__fin`).remove()
-    addActionLabelsAndCollapse(actions)
-    addStatusRow()
-
-    // restart
-    validate()
+    continueValidation(actions)
   }
 }

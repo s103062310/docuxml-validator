@@ -38,7 +38,7 @@ const _metadata = [
   'timeseq_not_after',
 ]
 
-/** @enum {string[]} */
+/** @type {Object.<string, string[]>} */
 const _xmlArchitecture = {
   root: ['xml', 'ThdlPrototypeExport'],
   ThdlPrototypeExport: ['corpus', 'documents'],
@@ -54,3 +54,16 @@ const _xmlArchitecture = {
   doc_content: ['Paragraph', 'MetaTags'],
   MetaTags: ['Udef_.+'],
 }
+
+/** @type {string[]} */
+const _allDocuLabel = (() => {
+  const allLabel = /** @type {string[]} */ (['a'])
+  Object.values(_xmlArchitecture).forEach((labels) => {
+    labels.forEach((label) => {
+      if (!allLabel.includes(label)) {
+        allLabel.push(label)
+      }
+    })
+  })
+  return allLabel
+})()

@@ -18,12 +18,18 @@ const addStatusRow = ({ status = 'loading', text = '驗證中...' } = {}) => {
   $('#content').append(html)
 }
 
-const addErrorDetail = ({ content }) => {
+/**
+ * add error detail information in status block
+ * @param {Object} input
+ * @param {string} input.content error detail
+ * @param {string} input.handleContinue continue function name
+ */
+const addErrorDetail = ({ content, handleContinue }) => {
   const html = `
     <div id="error-${_errorNum}" class="msg-board">${content}</div>
     <div id="error-${_errorNum}__fin" class="field">
       <div class="group">
-        <button class="btn" onclick="handleFinishDetectSymbol()" onblur="handleBlurContinue()">修正完成並繼續</button>
+        <button class="btn" onclick="${handleContinue}()" onblur="handleBlurContinue()">繼續</button>
         <button class="btn" onclick="endValidate()">結束</button>
       </div>
     </div>
@@ -44,6 +50,20 @@ const addActionLabelsAndCollapse = (texts) => {
 }
 
 // Components
+
+/**
+ * generate html of service email link
+ * @param {Object} input
+ * @param {string} input.title email subject
+ * @returns {string} html of service email
+ */
+const serviceElement = ({ title }) => {
+  const email = 'docusky.contact@gmail.com'
+  const subject = `【DocuXML 驗證工具】${title}`
+  const body =
+    '感謝您使用 DocuSky，為了能夠更迅速地協助您建庫，請盡可能詳細地描述操作過程與遇到的問題，並提供發生錯誤的螢幕截圖與 xml 檔案。'
+  return `<a href="mailto:${email}?subject=${subject}&body=${body}">${email}</a> `
+}
 
 /**
  * generate html of highlight block of specific symbol
@@ -101,35 +121,24 @@ const errorElement = ({ text, iconStyle }) => `
   </div>
 `
 
-// For error "Cannot Identify Label"
+// For errors
 
-/**
- * message section
- */
 const showCannotIdentifyLabel = () => {
-  const email = 'docusky.contact@gmail.com'
-  const subject = '【DocuXML 驗證工具】遇到無法辨識的標籤'
-  const body =
-    '感謝您使用 DocuSky，為了能夠更迅速地協助您建庫，請盡可能詳細地描述操作過程與遇到的問題，並提供發生錯誤的螢幕截圖與 xml 檔案。'
-  const html = `
-    <div id="error-${_errorNum}" class="msg-board">
-      若無法順利建庫，請螢幕截圖錯誤訊息並附上 xml 檔案，來信 
-      <a href="mailto:${email}?subject=${subject}&body=${body}">${email}</a> 
-      由專人協助。
-    </div>
+  const service = serviceElement({ title: '遇到無法辨識的標籤' })
+  const content = `
     <div class="group">
-      <button class="btn" onclick="handleIgnoreUnknownLabel()">略過並繼續</button>
-      <button class="btn" onclick="endValidate()">結束</button>
+      <button class="btn" onclick="">我確定這是 DocuXML 標籤</button>
+      <button class="btn" onclick="">刪除此標籤與其內容</button>
+      <button class="btn" onclick="">修改標籤原文</button>
     </div>
+    <div style="margin-top: 0.75rem">若無法順利建庫，請螢幕截圖錯誤訊息並附上 xml 檔案，來信 ${service} 由專人協助。</div>
   `
-  $('#content').append(`<div class="detail">${html}</div>`)
+  addErrorDetail({
+    content,
+    handleContinue: 'handleFinishCannotIdentifyLabel',
+  })
 }
 
-// For error "Detect Specific Symbol"
-
-/**
- * message section
- */
 const showDetectSymbol = () => {
   // TODO: 段落資訊
   // TODO: 重設、全部刪除、全部保留
@@ -147,5 +156,8 @@ const showDetectSymbol = () => {
     <div class="line"></div>
     ${text.replace(/\n/g, '<br/>')}
   `
-  addErrorDetail({ content })
+  addErrorDetail({
+    content,
+    handleContinue: 'handleFinishDetectSymbol',
+  })
 }
