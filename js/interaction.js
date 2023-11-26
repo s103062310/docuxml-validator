@@ -101,6 +101,37 @@ const handleModify = (index) => {
   }
 }
 
+// For detect symbol tools
+
+/**
+ * trigger when user click delete all button
+ */
+const handleDeleteAll = () => {
+  _stopInfo.highlights.forEach((_, index) => {
+    handleDelete(index)
+  })
+}
+
+/**
+ * trigger when user click keep all button
+ */
+const handleKeepAll = () => {
+  _stopInfo.highlights.forEach((_, index) => {
+    handleKeep(index)
+  })
+}
+
+/**
+ * trigger when user click reset button
+ */
+const handleReset = () => {
+  _stopInfo.highlights = _stopInfo.highlights.map(({ index, target }, i) => {
+    const highlight = highlightElement({ index: i, text: target })
+    $(`#error-${_errorNum}__highlight-${i}`).replaceWith(highlight)
+    return { index, target }
+  })
+}
+
 // For cannot identify choices
 
 const handleIgnore = () => {

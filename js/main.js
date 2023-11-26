@@ -25,47 +25,47 @@ const validate = () => {
     if (checkLabel(label)) return
 
     if (labelType === 'start') {
-      const stackLength = _labelNameStack.length
-      const parentLabelName = stackLength > 0 ? _labelNameStack[stackLength - 1] : 'root'
+      // const stackLength = _labelNameStack.length
+      // const parentLabelName = stackLength > 0 ? _labelNameStack[stackLength - 1] : 'root'
 
-      // check label is a DocuXml label
-      if (parentLabelName in _xmlArchitecture) {
-        // check label is a valid child of parent
-        const isLegal = _xmlArchitecture[parentLabelName].reduce((flag, label) => {
-          const regex = new RegExp(label)
-          return regex.test(labelName) || flag
-        }, false)
+      // // check label is a DocuXml label
+      // if (parentLabelName in _xmlArchitecture) {
+      //   // check label is a valid child of parent
+      //   const isLegal = _xmlArchitecture[parentLabelName].reduce((flag, label) => {
+      //     const regex = new RegExp(label)
+      //     return regex.test(labelName) || flag
+      //   }, false)
 
-        if (!isLegal) {
-          _errorNum += 1
-          _stopInfo = { parentLabelName, labelName }
-          stopValidation({
-            status: 'error',
-            text: `無法辨識標籤 ${_symbol['<']}${labelName}${_symbol['>']}`,
-          })
-          showCannotIdentifyLabel()
-          return
-        }
-      } else {
-        // check for parent label not in _xmlArchitecture
-        if (labelName === 'a') {
-          // only custom metadata can have link
-          if (_labelNameStack[stackLength - 2] !== 'xml_metadata') {
-            // TODO: error
-            console.log(_labelNameStack)
-            return
-          }
-        } else {
-          _errorNum += 1
-          _stopInfo = { parentLabelName }
-          stopValidation({
-            status: 'error',
-            text: `標籤 ${_symbol['<']}${parentLabelName}${_symbol['>']} 內不應存在其他標籤`,
-          })
-          // TODO: detail
-          return
-        }
-      }
+      //   if (!isLegal) {
+      //     _errorNum += 1
+      //     _stopInfo = { parentLabelName, labelName }
+      //     stopValidation({
+      //       status: 'error',
+      //       text: `無法辨識標籤 ${_symbol['<']}${labelName}${_symbol['>']}`,
+      //     })
+      //     showCannotIdentifyLabel()
+      //     return
+      //   }
+      // } else {
+      //   // check for parent label not in _xmlArchitecture
+      //   if (labelName === 'a') {
+      //     // only custom metadata can have link
+      //     if (_labelNameStack[stackLength - 2] !== 'xml_metadata') {
+      //       // TODO: error
+      //       console.log(_labelNameStack)
+      //       return
+      //     }
+      //   } else {
+      //     _errorNum += 1
+      //     _stopInfo = { parentLabelName }
+      //     stopValidation({
+      //       status: 'error',
+      //       text: `標籤 ${_symbol['<']}${parentLabelName}${_symbol['>']} 內不應存在其他標籤`,
+      //     })
+      //     // TODO: detail
+      //     return
+      //   }
+      // }
 
       _labelNameStack.push(labelName)
     } else if (labelType === 'end') {
@@ -84,7 +84,7 @@ const validate = () => {
     _validateIndex = _validateIndex + result.index + result[0].length
   }
 
-  stopValidation({ status: 'success', text: '完成！' })
+  stopValidation({ status: 'success', text: '驗證成功！' })
   endValidate()
 }
 
@@ -103,6 +103,7 @@ const stopValidation = (row) => {
  */
 const continueValidation = (actions) => {
   // reset ui
+  $(`#error-${_errorNum}__tools`).remove()
   $(`#error-${_errorNum}__fin`).remove()
   addActionLabelsAndCollapse(actions)
   addStatusRow()
@@ -115,13 +116,14 @@ const continueValidation = (actions) => {
  * end the whole validate procedure
  */
 const endValidate = () => {
-  // reset ui
+  $(`#error-${_errorNum}__tools`).remove()
   $(`#error-${_errorNum}__fin`).remove()
   $('#upload-btn').show()
 
-  // download result
-  $('#download-btn').show()
-  // downloadResult()
+  // 驗證成功才顯示下載按鈕
+  if ($('.status-row:last-child').length > 0) {
+    $('#download-btn').show()
+  }
 }
 
 // For checking
@@ -170,14 +172,6 @@ const checkLabel = (label) => {
 
 // For finishing error
 
-const handleFinishCannotIdentifyLabel = () => {
-  // TODO: hint modal
-  // ignore label
-  // _xmlArchitecture[_stopInfo.parentLabelName].push(_stopInfo.labelName)
-
-  continueValidation(['略過'])
-}
-
 const handleFinishDetectSymbol = () => {
   const isModifyAll = _stopInfo.highlights.reduce(
     (result, { decision }) => result && Boolean(decision),
@@ -203,4 +197,12 @@ const handleFinishDetectSymbol = () => {
 
     continueValidation(actions)
   }
+}
+
+const handleFinishCannotIdentifyLabel = () => {
+  // TODO: hint modal
+  // ignore label
+  // _xmlArchitecture[_stopInfo.parentLabelName].push(_stopInfo.labelName)
+
+  continueValidation(['略過'])
 }

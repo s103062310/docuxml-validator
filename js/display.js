@@ -153,6 +153,34 @@ const errorElement = ({ text, iconStyle }) => `
 
 // For errors
 
+const showDetectSymbol = () => {
+  // TODO: 段落資訊
+  // TODO: 仔細思考工具列的功能
+  let text = _stopInfo.value
+  _stopInfo.highlights.forEach(({ index, target }, i) => {
+    const beforeStr = text.substring(0, index)
+    const afterStr = text.substring(index + 1)
+    const highlight = highlightElement({ index: i, text: target })
+    text = `${beforeStr}${highlight}${afterStr}`
+  })
+  const content = `
+    ${Object.keys(_symbol).join(
+      '、',
+    )} 為 xml 格式中用來辨認標籤的符號，請使用工具列或者點擊以下文本中標示出的符號做更改：
+    <div id="error-${_errorNum}__tools" class="group" style="margin-top: 0.75rem">
+      <button class="btn" onclick="handleDeleteAll()">全部刪除</button>
+      <button class="btn" onclick="handleKeepAll()">全部保留</button>
+      <button class="btn" onclick="handleReset()">重設</button>
+    </div>
+    <div class="line"></div>
+    ${text.replace(/\n/g, '<br/>')}
+  `
+  addErrorDetail({
+    content,
+    handleContinue: 'handleFinishDetectSymbol',
+  })
+}
+
 const showCannotIdentifyLabel = () => {
   const labelStr = `${_symbol['<']}${_stopInfo.label.string}${_symbol['>']}`
   const service = serviceElement({ text: '需要協助嗎？', title: '遇到無法辨識的標籤' })
@@ -181,28 +209,5 @@ const showCannotIdentifyLabel = () => {
     title: `忽略標籤 ${_symbol['<']}${_stopInfo.label.labelName}${_symbol['>']} 的錯誤`,
     content: `本工具將暫時支援辨識標籤 ${_symbol['<']}${_stopInfo.label.labelName}${_symbol['>']}，但不包含其下的其他標籤。`,
     handleClick: 'handleIgnoreLabel',
-  })
-}
-
-const showDetectSymbol = () => {
-  // TODO: 段落資訊
-  // TODO: 重設、全部刪除、全部保留
-  let text = _stopInfo.value
-  _stopInfo.highlights.forEach(({ index, target }, i) => {
-    const beforeStr = text.substring(0, index)
-    const afterStr = text.substring(index + 1)
-    const highlight = highlightElement({ index: i, text: target })
-    text = `${beforeStr}${highlight}${afterStr}`
-  })
-  const content = `
-    ${Object.keys(_symbol).join(
-      '、',
-    )} 為 xml 格式中用來辨認標籤的符號，請點擊以下文本中標示出的符號做更改：
-    <div class="line"></div>
-    ${text.replace(/\n/g, '<br/>')}
-  `
-  addErrorDetail({
-    content,
-    handleContinue: 'handleFinishDetectSymbol',
   })
 }
