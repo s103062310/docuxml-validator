@@ -29,6 +29,7 @@ let _errorNum = 0
 
 /** @type {any} error information when validation is interrupted */
 let _stopInfo = {
+  label: {},
   value: '', // the whole substring which contains errors
   highlights: [], // info for each highlights
 }
@@ -39,6 +40,7 @@ let _stopInfo = {
  * @typedef {Object} Label
  * @property {('start' | 'end' | 'single')} labelType
  * @property {string} labelName
+ * @property {string} string
  */
 
 /**

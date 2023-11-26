@@ -149,7 +149,6 @@ const checkText = (value) => {
  */
 const checkLabel = (label) => {
   // TODO: check attribute?
-
   const isDocuLabel = _allDocuLabel.reduce((flag, docuLabel) => {
     const regex = new RegExp(docuLabel)
     return regex.test(label.labelName) || flag
@@ -157,7 +156,7 @@ const checkLabel = (label) => {
 
   if (!isDocuLabel) {
     _errorNum += 1
-    // _stopInfo = { value, highlights }
+    _stopInfo = { label, highlights: [{}] }
     stopValidation({
       status: 'error',
       text: `無法辨識標籤 ${_symbol['<']}${label.labelName}${_symbol['>']}`,

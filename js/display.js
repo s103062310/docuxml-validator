@@ -1,4 +1,33 @@
 /**
+ * add a modal
+ * @param {Object} input
+ * @param {string} input.id modal id
+ * @param {string} input.title modal title
+ * @param {string} input.content modal body
+ * @param {string} input.handleClick click function
+ */
+const addModal = ({ id, title, content, handleClick }) => {
+  const modal = `
+    <div class="modal fade" id="${id}" tabindex="-1" aria-labelledby="${id}__title" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="${id}__title">${title}</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">${content}</div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" data-bs-dismiss="modal">取消</button>
+            <button type="button" class="btn" onclick="${handleClick}()">確定</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
+  $('#modals').append(modal)
+}
+
+/**
  * add a row in status block
  * @param {StatusRow} row row data which is going to display
  */
@@ -30,7 +59,7 @@ const addErrorDetail = ({ content, handleContinue }) => {
     <div id="error-${_errorNum}__fin" class="field">
       <div class="group">
         <button class="btn" onclick="${handleContinue}()" onblur="handleBlurContinue()">繼續</button>
-        <button class="btn" onclick="endValidate()">結束</button>
+        <button class="btn btn-outline" onclick="endValidate()">結束</button>
       </div>
     </div>
   `
@@ -54,15 +83,16 @@ const addActionLabelsAndCollapse = (texts) => {
 /**
  * generate html of service email link
  * @param {Object} input
- * @param {string} input.title email subject
+ * @param {string} [input.text] link displayed text
+ * @param {string} [input.title] email subject
  * @returns {string} html of service email
  */
-const serviceElement = ({ title }) => {
+const serviceElement = ({ text, title = '問題諮詢' } = {}) => {
   const email = 'docusky.contact@gmail.com'
   const subject = `【DocuXML 驗證工具】${title}`
   const body =
     '感謝您使用 DocuSky，為了能夠更迅速地協助您建庫，請盡可能詳細地描述操作過程與遇到的問題，並提供發生錯誤的螢幕截圖與 xml 檔案。'
-  return `<a href="mailto:${email}?subject=${subject}&body=${body}">${email}</a> `
+  return `<a href="mailto:${email}?subject=${subject}&body=${body}">${text || email}</a> `
 }
 
 /**
@@ -124,18 +154,33 @@ const errorElement = ({ text, iconStyle }) => `
 // For errors
 
 const showCannotIdentifyLabel = () => {
-  const service = serviceElement({ title: '遇到無法辨識的標籤' })
+  const labelStr = `${_symbol['<']}${_stopInfo.label.string}${_symbol['>']}`
+  const service = serviceElement({ text: '需要協助嗎？', title: '遇到無法辨識的標籤' })
   const content = `
+    <div class="help-msg">
+      <span>請選擇一種處理方式：</span>
+      ${service}
+    </div>
     <div class="group">
-      <button class="btn" onclick="">我確定這是 DocuXML 標籤</button>
-      <button class="btn" onclick="">刪除此標籤與其內容</button>
+      <button class="btn" data-bs-toggle="modal" data-bs-target="#ignore">
+        我確定這是 DocuXML 標籤
+      </button>
+      <button class="btn" onclick="">刪除此標籤與其包含的內容</button>
       <button class="btn" onclick="">修改標籤原文</button>
     </div>
-    <div style="margin-top: 0.75rem">若無法順利建庫，請螢幕截圖錯誤訊息並附上 xml 檔案，來信 ${service} 由專人協助。</div>
+    <div class="line"></div>
+    <div>標籤原文：</div>
+    <textarea class="form-control" disabled style="width: 100%; margin-top: .75rem;">${labelStr}</textarea>
   `
   addErrorDetail({
     content,
     handleContinue: 'handleFinishCannotIdentifyLabel',
+  })
+  addModal({
+    id: 'ignore',
+    title: `忽略標籤 ${_symbol['<']}${_stopInfo.label.labelName}${_symbol['>']} 的錯誤`,
+    content: `本工具將暫時支援辨識標籤 ${_symbol['<']}${_stopInfo.label.labelName}${_symbol['>']}，但不包含其下的其他標籤。`,
+    handleClick: 'handleIgnoreLabel',
   })
 }
 

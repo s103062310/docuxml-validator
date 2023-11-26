@@ -8,7 +8,17 @@ const parseLabel = (labelStr) => {
   const labelType =
     labelStr[labelStr.length - 1] === '/' ? 'single' : labelStr[0] === '/' ? 'end' : 'start'
   const labelName = result[0].replace('/', '')
-  return { labelType, labelName }
+  return { labelType, labelName, string: labelStr }
+}
+
+/**
+ * get now parent label
+ * @returns {string} parent label name
+ */
+const getParentLabel = () => {
+  const stackLength = _labelNameStack.length
+  const parentLabelName = stackLength > 0 ? _labelNameStack[stackLength - 1] : 'root'
+  return parentLabelName
 }
 
 /**

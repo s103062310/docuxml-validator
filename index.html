@@ -63,7 +63,7 @@
       <div id="intro">
         <h1>DocuXML 檢測工具</h1>
         <p>這個工具提供 DocuXML 的合法性檢測，快速找出無法建庫的原因並修正。</p>
-        <div class="group" style="display: flex">
+        <div class="group">
           <button id="upload-btn" class="btn" onclick="$('#upload-input').click()">
             上傳 XML 檔案
           </button>
@@ -72,10 +72,18 @@
             下載已修正成果
           </button>
         </div>
+        <div class="line"></div>
+        <p>
+          若無法順利建庫，請螢幕截圖錯誤訊息並附上 xml 檔案，來信
+          <span id="intro__email"></span> 由專人協助。
+        </p>
       </div>
 
       <div id="content"></div>
     </main>
+
+    <!-- modal -->
+    <div id="modals"></div>
 
     <!-- JAVASCRIPT FILE -->
     <script src="./js/schema.js"></script>
@@ -85,5 +93,8 @@
     <script src="./js/display.js"></script>
     <script src="./js/interaction.js"></script>
     <script src="./js/main.js"></script>
+    <script>
+      $('#intro__email').append(serviceElement())
+    </script>
   </body>
 </html>

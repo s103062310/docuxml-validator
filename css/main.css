@@ -1,5 +1,5 @@
 #intro {
-  width: 20rem;
+  width: 25rem;
   flex-shrink: 0;
 }
 
@@ -94,6 +94,12 @@
   background-color: var(--color--gray-bg);
   border-radius: 1rem;
   padding: 1rem;
+}
+
+.help-msg {
+  margin-bottom: 0.75rem;
+  display: flex;
+  justify-content: space-between;
 }
 
 .highlight {

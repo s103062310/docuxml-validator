@@ -100,3 +100,10 @@ const handleModify = (index) => {
     $(id).replaceWith(highlight)
   }
 }
+
+// For cannot identify choices
+
+const handleIgnore = () => {
+  // _stopInfo.highlights[0].decision = '忽略'
+  // $(`#error-${_errorNum}__highlight-${index}`).replaceWith(highlight)
+}
