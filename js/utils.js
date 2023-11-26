@@ -1,14 +1,25 @@
 /**
  * parse xml label from original string
- * @param {string} labelStr string of a xml label
+ * @param {string} string string of a xml label
  * @return {Label} parsed label data
  */
-const parseLabel = (labelStr) => {
+const parseLabel = (string) => {
+  const labelStr = string.slice(1, -1).trim() // remove '<' & '>'
   const result = labelStr.split(/\s/)
-  const labelType =
+  const type =
     labelStr[labelStr.length - 1] === '/' ? 'single' : labelStr[0] === '/' ? 'end' : 'start'
-  const labelName = result[0].replace('/', '')
-  return { labelType, labelName, string: labelStr }
+  const name = result[0].replace('/', '')
+
+  // parse attributes
+  const attributes = /** @type {Object.<string, string>} */ ({})
+  result.forEach((segment) => {
+    const segmentResult = /(.+)="(.+)"/.exec(segment.trim())
+    if (segmentResult !== null) {
+      attributes[segmentResult[1]] = segmentResult[2].trim()
+    }
+  })
+
+  return { labelType: type, labelName: name, string, attributes }
 }
 
 /**

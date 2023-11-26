@@ -10,7 +10,33 @@ const validate = () => {
 
     if (result === null) {
       // cannot find anymore label
+      // TODO: stack not empty
+      if (_labelNameStack.length > 0) {
+        _errorNum += 1
+        stopValidation({
+          status: 'error',
+          text: '標籤沒有正確嵌套',
+        })
+        addErrorDetail({ content: '此部分尚在開發中，請洽專人協助。' })
+        return
+      }
+
       // TODO: check remaining string
+      const finalString = _xml.substring(_validateIndex).trim()
+      if (finalString) {
+        _errorNum += 1
+        stopValidation({
+          status: 'error',
+          text: '偵測到多餘的內容',
+        })
+        const content = `
+          在 DocuXML 標籤外偵測到多餘的文字，工具將自動刪除該內容。
+          <div class="line"></div>
+          ${finalString.replace(/\n/g, '<br/>')}
+        `
+        addErrorDetail({ content, handleContinue: 'handleFinishRedundant' })
+        return
+      }
       break
     } else {
       // check string between last label and this label
@@ -19,8 +45,7 @@ const validate = () => {
     }
 
     // parse label
-    const labelStr = result[0].slice(1, -1).trim() // remove '<' & '>'
-    const label = parseLabel(labelStr)
+    const label = parseLabel(result[0])
     const { labelType, labelName } = label
     if (checkLabel(label)) return
 
@@ -74,6 +99,12 @@ const validate = () => {
       // TODO: handle error
       if (topLabelName !== labelName) {
         console.log('error!', labelName)
+        _errorNum += 1
+        stopValidation({
+          status: 'error',
+          text: '標籤沒有正確嵌套',
+        })
+        addErrorDetail({ content: '此部分尚在開發中，請洽專人協助。' })
         return
       }
     } else {
@@ -150,22 +181,36 @@ const checkText = (value) => {
  * @returns {boolean} true if label is not DocuXML label
  */
 const checkLabel = (label) => {
-  // TODO: check attribute?
-  const isDocuLabel = _allDocuLabel.reduce((flag, docuLabel) => {
-    const regex = new RegExp(docuLabel)
-    return regex.test(label.labelName) || flag
-  }, false)
-
-  if (!isDocuLabel) {
-    _errorNum += 1
-    _stopInfo = { label, highlights: [{}] }
-    stopValidation({
-      status: 'error',
-      text: `無法辨識標籤 ${_symbol['<']}${label.labelName}${_symbol['>']}`,
+  // TODO: check attribute
+  for (let key in label.attributes) {
+    const value = label.attributes[key]
+    const highlights = findAllByRegex({
+      value,
+      regex: label.labelName === 'a' ? new RegExp(/<|>/g) : _illegalSymbolRegex,
     })
-    showCannotIdentifyLabel()
-    return true
+    if (highlights.length > 0) {
+      _errorNum += 1
+      stopValidation({ status: 'error', text: '偵測到標籤屬性中有特殊符號' })
+      addErrorDetail({ content: '此部分尚在開發中，請洽專人協助。' })
+      return true
+    }
   }
+
+  // const isDocuLabel = _allDocuLabel.reduce((flag, docuLabel) => {
+  //   const regex = new RegExp(docuLabel)
+  //   return regex.test(label.labelName) || flag
+  // }, false)
+
+  // if (!isDocuLabel) {
+  //   _errorNum += 1
+  //   _stopInfo = { label, highlights: [{}] }
+  //   stopValidation({
+  //     status: 'error',
+  //     text: `無法辨識標籤 ${_symbol['<']}${label.labelName}${_symbol['>']}`,
+  //   })
+  //   showCannotIdentifyLabel()
+  //   return true
+  // }
 
   return false
 }
@@ -205,4 +250,9 @@ const handleFinishCannotIdentifyLabel = () => {
   // _xmlArchitecture[_stopInfo.parentLabelName].push(_stopInfo.labelName)
 
   continueValidation(['略過'])
+}
+
+const handleFinishRedundant = () => {
+  _xml = _xml.substring(0, _validateIndex)
+  continueValidation(['刪除'])
 }

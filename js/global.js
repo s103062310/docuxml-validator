@@ -41,6 +41,7 @@ let _stopInfo = {
  * @property {('start' | 'end' | 'single')} labelType
  * @property {string} labelName
  * @property {string} string
+ * @property {Object.<string, string>} attributes
  */
 
 /**

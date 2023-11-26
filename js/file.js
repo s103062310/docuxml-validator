@@ -43,7 +43,7 @@ const getDataFromXmlFile = (file) => {
 const downloadResult = () => {
   const textFileAsBlob = new Blob([_xml], { type: 'text/xml' })
   const downloadLink = document.createElement('a')
-  downloadLink.download = _filename.replace('.xml', '_validated')
+  downloadLink.download = _filename.replace('.xml', '_validated.xml')
   downloadLink.innerHTML = 'Download File'
 
   if (window.webkitURL != null) {

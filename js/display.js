@@ -51,14 +51,18 @@ const addStatusRow = ({ status = 'loading', text = '驗證中...' } = {}) => {
  * add error detail information in status block
  * @param {Object} input
  * @param {string} input.content error detail
- * @param {string} input.handleContinue continue function name
+ * @param {string} [input.handleContinue] continue function name
  */
 const addErrorDetail = ({ content, handleContinue }) => {
   const html = `
     <div id="error-${_errorNum}" class="msg-board">${content}</div>
     <div id="error-${_errorNum}__fin" class="field">
       <div class="group">
-        <button class="btn" onclick="${handleContinue}()" onblur="handleBlurContinue()">繼續</button>
+        ${
+          handleContinue
+            ? `<button class="btn" onclick="${handleContinue}()" onblur="handleBlurContinue()">繼續</button>`
+            : ''
+        }        
         <button class="btn btn-outline" onclick="endValidate()">結束</button>
       </div>
     </div>
