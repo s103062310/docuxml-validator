@@ -31,7 +31,7 @@ let _errorNum = 0
 let _stopInfo = {
   label: {},
   value: '', // the whole substring which contains errors
-  highlights: [], // info for each highlights
+  highlights: {}, // info for each highlights
 }
 
 // self defined data structure

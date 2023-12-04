@@ -19,34 +19,37 @@ const handleBlurContinue = () => {
 
 /**
  * trigger when user choose to modify the specific symbol in text
- * @param {number} index target index in symbol array of stop info
+ * @param {string} attr target attribute in stop info
+ * @param {number} index target index in attribute's symbol array of stop info
  */
-const handleShowModify = (index) => {
-  const modify = modifyElement(index)
-  $(`#error-${_errorNum}__highlight-${index}`).replaceWith(modify)
+const handleShowModify = (attr, index) => {
+  const modify = modifyElement({ attr, index })
+  $(`#error-${_errorNum}__highlight-${attr}${index}`).replaceWith(modify)
 }
 
 /**
  * trigger when user choose to delete the specific symbol in text
- * @param {number} index target index in symbol array of stop info
+ * @param {string} attr target attribute in stop info
+ * @param {number} index target index in attribute's symbol array of stop info
  */
-const handleDelete = (index) => {
-  _stopInfo.highlights[index].decision = '刪除'
-  _stopInfo.highlights[index].result = ''
-  const highlight = highlightElement({ index, text: '&emsp;', isSolved: true })
-  $(`#error-${_errorNum}__highlight-${index}`).replaceWith(highlight)
+const handleDelete = (attr, index) => {
+  _stopInfo.highlights[attr][index].decision = '刪除'
+  _stopInfo.highlights[attr][index].result = ''
+  const highlight = highlightElement({ attr, index, text: '&emsp;', isSolved: true })
+  $(`#error-${_errorNum}__highlight-${attr}${index}`).replaceWith(highlight)
 }
 
 /**
  * trigger when user choose to keep the specific symbol in text
- * @param {number} index target index in symbol array of stop info
+ * @param {string} attr target attribute in stop info
+ * @param {number} index target index in attribute's symbol array of stop info
  */
-const handleKeep = (index) => {
-  const result = _symbol[_stopInfo.highlights[index].target]
-  _stopInfo.highlights[index].decision = '保留'
-  _stopInfo.highlights[index].result = result
-  const highlight = highlightElement({ index, text: result, isSolved: true })
-  $(`#error-${_errorNum}__highlight-${index}`).replaceWith(highlight)
+const handleKeep = (attr, index) => {
+  const result = _symbol[_stopInfo.highlights[attr][index].target]
+  _stopInfo.highlights[attr][index].decision = '保留'
+  _stopInfo.highlights[attr][index].result = result
+  const highlight = highlightElement({ attr, index, text: result, isSolved: true })
+  $(`#error-${_errorNum}__highlight-${attr}${index}`).replaceWith(highlight)
 }
 
 // For modify ui
@@ -54,30 +57,33 @@ const handleKeep = (index) => {
 /**
  * trigger when user edit in modify input
  * clear previous error message
- * @param {number} index target index in symbol array of stop info
+ * @param {string} attr target attribute in stop info
+ * @param {number} index target index in attribute's symbol array of stop info
  */
-const handleChangeModifyInput = (index) => {
-  $(`#modify-${index}__input`).removeClass('error')
-  $(`#modify-${index} .error-msg`).remove()
+const handleChangeModifyInput = (attr, index) => {
+  $(`#modify-${attr}${index}__input`).removeClass('error')
+  $(`#modify-${attr}${index} .error-msg`).remove()
 }
 
 /**
  * trigger when user cancel the modify procedure
- * @param {number} index target index in symbol array of stop info
+ * @param {string} attr target attribute in stop info
+ * @param {number} index target index in attribute's symbol array of stop info
  */
-const handleCancelModify = (index) => {
-  const text = _stopInfo.highlights[index].target
-  const highlight = highlightElement({ index, text })
-  $(`#modify-${index}`).replaceWith(highlight)
+const handleCancelModify = (attr, index) => {
+  const text = _stopInfo.highlights[attr][index].target
+  const highlight = highlightElement({ attr, index, text })
+  $(`#modify-${attr}${index}`).replaceWith(highlight)
 }
 
 /**
  * trigger when user finish the modify procedure
- * @param {number} index target index in symbol array of stop info
+ * @param {string} attr target attribute in stop info
+ * @param {number} index target index in attribute's symbol array of stop info
  */
-const handleModify = (index) => {
-  const id = `#modify-${index}`
-  const inputId = `#modify-${index}__input`
+const handleModify = (attr, index) => {
+  const id = `#modify-${attr}${index}`
+  const inputId = `#modify-${attr}${index}__input`
   const value = /** @type {string} */ ($(inputId).val())
   if (_illegalSymbolRegex.test(value)) {
     const error = errorElement({
@@ -94,9 +100,9 @@ const handleModify = (index) => {
     $(inputId).addClass('error')
     $(id).append(error)
   } else {
-    _stopInfo.highlights[index].decision = '修改'
-    _stopInfo.highlights[index].result = value
-    const highlight = highlightElement({ index, text: value, isSolved: true })
+    _stopInfo.highlights[attr][index].decision = '修改'
+    _stopInfo.highlights[attr][index].result = value
+    const highlight = highlightElement({ attr, index, text: value, isSolved: true })
     $(id).replaceWith(highlight)
   }
 }
@@ -107,8 +113,10 @@ const handleModify = (index) => {
  * trigger when user click delete all button
  */
 const handleDeleteAll = () => {
-  _stopInfo.highlights.forEach((_, index) => {
-    handleDelete(index)
+  Object.keys(_stopInfo.highlights).forEach((attr) => {
+    _stopInfo.highlights[attr].forEach((_, index) => {
+      handleDelete(attr, index)
+    })
   })
 }
 
@@ -116,8 +124,10 @@ const handleDeleteAll = () => {
  * trigger when user click keep all button
  */
 const handleKeepAll = () => {
-  _stopInfo.highlights.forEach((_, index) => {
-    handleKeep(index)
+  Object.keys(_stopInfo.highlights).forEach((attr) => {
+    _stopInfo.highlights[attr].forEach((_, index) => {
+      handleKeep(attr, index)
+    })
   })
 }
 
@@ -125,10 +135,13 @@ const handleKeepAll = () => {
  * trigger when user click reset button
  */
 const handleReset = () => {
-  _stopInfo.highlights = _stopInfo.highlights.map(({ index, target }, i) => {
-    const highlight = highlightElement({ index: i, text: target })
-    $(`#error-${_errorNum}__highlight-${i}`).replaceWith(highlight)
-    return { index, target }
+  const newHighlights = {}
+  Object.keys(_stopInfo.highlights).forEach((attr) => {
+    newHighlights[attr] = _stopInfo.highlights[attr].map(({ index, target }, i) => {
+      const highlight = highlightElement({ attr, index: i, text: target })
+      $(`#error-${_errorNum}__highlight-${attr}${i}`).replaceWith(highlight)
+      return { index, target }
+    })
   })
 }
 

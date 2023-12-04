@@ -102,43 +102,46 @@ const serviceElement = ({ text, title = '問題諮詢' } = {}) => {
 /**
  * generate html of highlight block of specific symbol
  * @param {Object} input
- * @param {number} input.index target index in symbol array of stop info
+ * @param {string} input.attr target attribute in stop info
+ * @param {number} input.index target index in attribute's symbol array of stop info
  * @param {string} input.text text which will be displayed in highlight label
  * @param {boolean} [input.isSolved] highlight style, normal or solved
  * @returns {string} html of highlight block
  */
-const highlightElement = ({ index, text, isSolved = false }) => {
+const highlightElement = ({ attr, index, text, isSolved = false }) => {
   // html need prevent '\n'
-  const modifyBtn = `<button class="btn" onclick="handleShowModify(${index})">修改</button>`
-  const deleteBtn = `<button class="btn" onclick="handleDelete(${index})">刪除</button>`
-  const keepBtn = `<button class="btn" onclick="handleKeep(${index})">保留</button>`
+  const modifyBtn = `<button class="btn" onclick="handleShowModify('${attr}', ${index})">修改</button>`
+  const deleteBtn = `<button class="btn" onclick="handleDelete('${attr}', ${index})">刪除</button>`
+  const keepBtn = `<button class="btn" onclick="handleKeep('${attr}', ${index})">保留</button>`
   const choices = `<div class="choices" style="display: none">${modifyBtn}${deleteBtn}${keepBtn}</div>`
-  const id = `error-${_errorNum}__highlight-${index}`
+  const ID = `error-${_errorNum}__highlight-${attr}${index}`
   const onclick = `onclick="$(this).find('.choices').toggle()"`
   return isSolved
-    ? `<div id="${id}" class="highlight solved">${text}</div>`
-    : `<div id="${id}" class="highlight" ${onclick}>${text}${choices}</div>`
+    ? `<div id="${ID}" class="highlight solved">${text}</div>`
+    : `<div id="${ID}" class="highlight" ${onclick}>${text}${choices}</div>`
 }
 
 /**
  * generate html of modify ui for highlight target
- * @param {number} index target index in symbol array of stop info
+ * @param {Object} input
+ * @param {string} input.attr target attribute in stop info
+ * @param {number} input.index target index in attribute's symbol array of stop info
  * @returns {string} html of modify ui
  */
-const modifyElement = (index) => {
+const modifyElement = ({ attr, index }) => {
   const input = `
     <input 
-      id="modify-${index}__input" 
+      id="modify-${attr}${index}__input" 
       class="form-control modify" 
       type="text" 
-      value="${_stopInfo.highlights[index].target}" 
-      onChange="handleChangeModifyInput(${index})"
+      value="${_stopInfo.highlights[attr][index].target}" 
+      onChange="handleChangeModifyInput('${attr}', ${index})"
     >
   `
-  const finBtn = `<button class="btn modify" onclick="handleModify(${index})">確定</button>`
-  const cancelBtn = `<button class="btn btn-outline modify" onclick="handleCancelModify(${index})">取消</button>`
+  const finBtn = `<button class="btn modify" onclick="handleModify('${attr}', ${index})">確定</button>`
+  const cancelBtn = `<button class="btn btn-outline modify" onclick="handleCancelModify('${attr}', ${index})">取消</button>`
   const modify = `<div class="modify-group">${input}${finBtn}${cancelBtn}</div>`
-  return `<div id="modify-${index}" class="field">${modify}</div>`
+  return `<div id="modify-${attr}${index}" class="field">${modify}</div>`
 }
 
 /**
@@ -161,10 +164,10 @@ const showDetectSymbol = () => {
   // TODO: 段落資訊
   // TODO: 仔細思考工具列的功能
   let text = _stopInfo.value
-  _stopInfo.highlights.forEach(({ index, target }, i) => {
+  _stopInfo.highlights.value.forEach(({ index, target }, i) => {
     const beforeStr = text.substring(0, index)
     const afterStr = text.substring(index + 1)
-    const highlight = highlightElement({ index: i, text: target })
+    const highlight = highlightElement({ attr: 'value', index: i, text: target })
     text = `${beforeStr}${highlight}${afterStr}`
   })
   const content = `

@@ -168,7 +168,7 @@ const checkText = (value) => {
   const highlights = findAllByRegex({ value, regex: _illegalSymbolRegex })
   if (highlights.length > 0) {
     _errorNum += 1
-    _stopInfo = { value, highlights }
+    _stopInfo = { value, highlights: { value: highlights } }
     stopValidation({ status: 'error', text: '偵測到特殊符號' })
     showDetectSymbol()
   }
@@ -218,7 +218,7 @@ const checkLabel = (label) => {
 // For finishing error
 
 const handleFinishDetectSymbol = () => {
-  const isModifyAll = _stopInfo.highlights.reduce(
+  const isModifyAll = _stopInfo.highlights.value.reduce(
     (result, { decision }) => result && Boolean(decision),
     true,
   )
@@ -230,7 +230,7 @@ const handleFinishDetectSymbol = () => {
     const actions = []
 
     // update xml
-    _stopInfo.highlights.forEach(({ index, decision, result }) => {
+    _stopInfo.highlights.value.forEach(({ index, decision, result }) => {
       const position = _validateIndex + index
       const beforeStr = _xml.substring(0, position)
       const afterStr = _xml.substring(position + 1)
