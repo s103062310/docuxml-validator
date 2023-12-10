@@ -23,6 +23,21 @@ const parseLabel = (string) => {
 }
 
 /**
+ * generate label string from parsed label object
+ * @param {Label} label parsed label data
+ * @return {string} string of a xml label
+ */
+const generateLabelString = (label) => {
+  const { labelType: type, labelName: name, attributes } = label
+  const frontSlash = type === 'end' ? '/' : ''
+  const endSlash = type === 'single' ? '/' : ''
+  const attributesStr = Object.entries(attributes)
+    .map(([key, value]) => `${key}="${value}"`)
+    .join(' ')
+  return `<${frontSlash}${name} ${attributesStr} ${endSlash}>`
+}
+
+/**
  * get now parent label
  * @returns {string} parent label name
  */
@@ -47,4 +62,52 @@ const findAllByRegex = ({ value, regex }) => {
   }
   targets.reverse()
   return targets
+}
+
+/**
+ * check all highlights
+ * @returns {boolean} is all errors modified or not
+ */
+const checkAllHighlightModified = () => {
+  /**
+   * check highlights of one attribute
+   * @param {HighlightInfo[]} highlight a record in _stopInfo.highlights[key]
+   * @returns {boolean} is all errors in one attribute modified or not
+   */
+  const checkHighlightModified = (highlight) =>
+    highlight.reduce((result, { decision }) => result && Boolean(decision), true)
+
+  const isModifyAll = Object.values(_stopInfo.highlights).reduce(
+    (result, highlight) => result && checkHighlightModified(highlight),
+    true,
+  )
+
+  return isModifyAll
+}
+
+/**
+ * update information according to modification
+ * @return {string[]} array of action label
+ */
+const updateStopInfo = () => {
+  const actions = []
+
+  Object.entries(_stopInfo.highlights).forEach(([key, highlight]) => {
+    let text = key === 'value' ? _stopInfo.value : _stopInfo.label.attributes[key]
+    highlight.forEach(({ index, decision, result }) => {
+      const beforeStr = text.substring(0, index)
+      const afterStr = text.substring(index + 1)
+      text = beforeStr + result + afterStr
+      if (!actions.includes(decision)) {
+        actions.push(decision)
+      }
+    })
+    if (key === 'value') {
+      _stopInfo.value = text
+    } else {
+      _stopInfo.label.attributes[key] = text
+    }
+  })
+
+  return actions
 }

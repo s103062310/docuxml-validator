@@ -60,7 +60,7 @@ const addErrorDetail = ({ content, handleContinue }) => {
       <div class="group">
         ${
           handleContinue
-            ? `<button class="btn" onclick="${handleContinue}()" onblur="handleBlurContinue()">繼續</button>`
+            ? `<button class="btn" onclick="${handleContinue}" onblur="handleBlurContinue()">繼續</button>`
             : ''
         }        
         <button class="btn btn-outline" onclick="endValidate()">結束</button>
@@ -76,7 +76,7 @@ const addErrorDetail = ({ content, handleContinue }) => {
  */
 const addActionLabelsAndCollapse = (texts) => {
   const statusRows = $('.status-row__text')
-  const labels = texts.map((text) => `<span class="label">${text}</span>`).join('')
+  const labels = texts.map((text) => `<span class="label label--action">${text}</span>`).join('')
   const collapse = `<i id="error-${_errorNum}-toggle" class="collapse-btn bi bi-chevron-compact-down" onclick="handleCollapse(${_errorNum})"></i>`
   $(statusRows[statusRows.length - 1]).append(labels + collapse)
   $(`#error-${_errorNum}`).toggle() // close finished error detail
@@ -184,7 +184,45 @@ const showDetectSymbol = () => {
   `
   addErrorDetail({
     content,
-    handleContinue: 'handleFinishDetectSymbol',
+    handleContinue: `handleFinishDetectSymbol('text')`,
+  })
+}
+
+const showDetectAttributeSymbol = () => {
+  // TODO: 段落資訊
+  // TODO: 仔細思考工具列的功能
+  const content = `
+    ${Object.keys(_symbol).join(
+      '、',
+    )} 為 xml 格式中用來辨認標籤的符號，請使用工具列或者點擊以下文本中標示出的符號做更改：
+    <div id="error-${_errorNum}__tools" class="group" style="margin-top: 0.75rem">
+      <button class="btn" onclick="handleDeleteAll()">全部刪除</button>
+      <button class="btn" onclick="handleKeepAll()">全部保留</button>
+      <button class="btn" onclick="handleReset()">重設</button>
+    </div>
+    <div class="line"></div>
+    標籤名稱：<span class="label">${_stopInfo.label.labelName}</span>
+    <br/>
+    標籤屬性：
+    <br/>
+    ${Object.entries(_stopInfo.label.attributes)
+      .map(([key, value]) => {
+        let text = value
+        if (key in _stopInfo.highlights) {
+          _stopInfo.highlights[key].forEach(({ index, target }, i) => {
+            const beforeStr = text.substring(0, index)
+            const afterStr = text.substring(index + 1)
+            const highlight = highlightElement({ attr: key, index: i, text: target })
+            text = `${beforeStr}${highlight}${afterStr}`
+          })
+        }
+        return `<span class="label">${key}</span>${text}`
+      })
+      .join('<br/>')}
+  `
+  addErrorDetail({
+    content,
+    handleContinue: `handleFinishDetectSymbol('label')`,
   })
 }
 
@@ -209,7 +247,7 @@ const showCannotIdentifyLabel = () => {
   `
   addErrorDetail({
     content,
-    handleContinue: 'handleFinishCannotIdentifyLabel',
+    handleContinue: 'handleFinishCannotIdentifyLabel()',
   })
   addModal({
     id: 'ignore',

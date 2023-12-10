@@ -7,7 +7,7 @@ const _symbol = {
 }
 
 /** @type {RegExp} regular expression of global illegal symbol  */
-const _illegalSymbolRegex = new RegExp(/<|>|"|&(?!(?:amp|gt|lt|quot);)/g)
+const _illegalSymbolRegex = new RegExp(/<|>|"|&(?!.+;)/g)
 
 /** @type {RegExp} regular expression of label */
 const _labelRegex = new RegExp(/<\s*\/?\s*[a-zA-Z0-9_]+(\s+[a-zA-Z0-9_]+="[^"]+")*\s*\/?\s*>/g)
@@ -29,9 +29,9 @@ let _errorNum = 0
 
 /** @type {any} error information when validation is interrupted */
 let _stopInfo = {
-  label: {},
+  label: {}, // the label which contains errors
   value: '', // the whole substring which contains errors
-  highlights: {}, // info for each highlights
+  highlights: /** @type {Object.<string, HighlightInfo>} */ ({}), // info for each highlights
 }
 
 // self defined data structure
@@ -54,4 +54,12 @@ let _stopInfo = {
  * @typedef {Object} SearchResult
  * @property {number} index index of target in original string
  * @property {string} target found target which matches pattern
+ */
+
+/**
+ * @typedef {Object} HighlightInfo
+ * @property {number} index index of target in original string
+ * @property {string} target found target which matches pattern
+ * @property {string} decision action of the error target
+ * @property {string} result modified string of target
  */

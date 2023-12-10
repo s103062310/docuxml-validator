@@ -34,7 +34,7 @@ const validate = () => {
           <div class="line"></div>
           ${finalString.replace(/\n/g, '<br/>')}
         `
-        addErrorDetail({ content, handleContinue: 'handleFinishRedundant' })
+        addErrorDetail({ content, handleContinue: 'handleFinishRedundant()' })
         return
       }
       break
@@ -182,18 +182,29 @@ const checkText = (value) => {
  */
 const checkLabel = (label) => {
   // TODO: check attribute
+
+  const highlights = {}
+
   for (let key in label.attributes) {
-    const value = label.attributes[key]
-    const highlights = findAllByRegex({
-      value,
-      regex: label.labelName === 'a' ? new RegExp(/<|>/g) : _illegalSymbolRegex,
-    })
-    if (highlights.length > 0) {
-      _errorNum += 1
-      stopValidation({ status: 'error', text: '偵測到標籤屬性中有特殊符號' })
-      addErrorDetail({ content: '此部分尚在開發中，請洽專人協助。' })
-      return true
+    // url may have special symbol &
+    if (label.labelName === 'a' && key === 'href') {
+      continue
     }
+
+    // check attribute [key]
+    const value = label.attributes[key]
+    const result = findAllByRegex({ value, regex: _illegalSymbolRegex })
+    if (result.length > 0) {
+      highlights[key] = result
+    }
+  }
+
+  if (Object.keys(highlights).length > 0) {
+    _errorNum += 1
+    _stopInfo = { label, value: label.string, highlights }
+    stopValidation({ status: 'error', text: '偵測到標籤屬性中有特殊符號' })
+    showDetectAttributeSymbol()
+    return true
   }
 
   // const isDocuLabel = _allDocuLabel.reduce((flag, docuLabel) => {
@@ -217,29 +228,21 @@ const checkLabel = (label) => {
 
 // For finishing error
 
-const handleFinishDetectSymbol = () => {
-  const isModifyAll = _stopInfo.highlights.value.reduce(
-    (result, { decision }) => result && Boolean(decision),
-    true,
-  )
-
+/**
+ * @param {('text' | 'label')} type handle target
+ */
+const handleFinishDetectSymbol = (type) => {
+  const isModifyAll = checkAllHighlightModified()
   if (!isModifyAll) {
     const error = errorElement({ text: '請修正完錯誤再繼續' })
     $(`#error-${_errorNum}__fin`).append(error)
   } else {
-    const actions = []
-
-    // update xml
-    _stopInfo.highlights.value.forEach(({ index, decision, result }) => {
-      const position = _validateIndex + index
-      const beforeStr = _xml.substring(0, position)
-      const afterStr = _xml.substring(position + 1)
-      _xml = beforeStr + result + afterStr
-      if (!actions.includes(decision)) {
-        actions.push(decision)
-      }
-    })
-
+    const oriValueLen = _stopInfo.value.length
+    const actions = updateStopInfo()
+    const beforeStr = _xml.substring(0, _validateIndex)
+    const afterStr = _xml.substring(_validateIndex + oriValueLen)
+    const updatedStr = type === 'text' ? _stopInfo.value : generateLabelString(_stopInfo.label)
+    _xml = beforeStr + updatedStr + afterStr
     continueValidation(actions)
   }
 }
