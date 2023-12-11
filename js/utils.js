@@ -1,7 +1,7 @@
 /**
  * parse xml label from original string
  * @param {string} string string of a xml label
- * @return {Label} parsed label data
+ * @returns {Label} parsed label data
  */
 const parseLabel = (string) => {
   const labelStr = string.slice(1, -1).trim() // remove '<' & '>'
@@ -25,7 +25,7 @@ const parseLabel = (string) => {
 /**
  * generate label string from parsed label object
  * @param {Label} label parsed label data
- * @return {string} string of a xml label
+ * @returns {string} string of a xml label
  */
 const generateLabelString = (label) => {
   const { labelType: type, labelName: name, attributes } = label
@@ -52,7 +52,7 @@ const getParentLabel = () => {
  * @param {Object} input
  * @param {string} input.value string which will be searched
  * @param {RegExp} input.regex target pattern which is wanted
- * @return {SearchResult[]} targets array
+ * @returns {SearchResult[]} targets array
  */
 const findAllByRegex = ({ value, regex }) => {
   const targets = []
@@ -87,7 +87,7 @@ const checkAllHighlightModified = () => {
 
 /**
  * update information according to modification
- * @return {string[]} array of action label
+ * @returns {string[]} array of action label
  */
 const updateStopInfo = () => {
   const actions = []

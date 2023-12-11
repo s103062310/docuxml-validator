@@ -47,7 +47,7 @@ const validate = () => {
     // parse label
     const label = parseLabel(result[0])
     const { labelType, labelName } = label
-    if (checkLabel(label)) return
+    if (checkLabel(label, result.index)) return
 
     if (labelType === 'start') {
       // const stackLength = _labelNameStack.length
@@ -94,19 +94,8 @@ const validate = () => {
 
       _labelNameStack.push(labelName)
     } else if (labelType === 'end') {
-      const topLabelName = _labelNameStack.pop()
-
-      // TODO: handle error
-      if (topLabelName !== labelName) {
-        console.log('error!', labelName)
-        _errorNum += 1
-        stopValidation({
-          status: 'error',
-          text: '標籤沒有正確嵌套',
-        })
-        addErrorDetail({ content: '此部分尚在開發中，請洽專人協助。' })
-        return
-      }
+      if (checkLabelClose(label, result.index)) return
+      _labelNameStack.pop()
     } else {
       // TODO: single label
     }
@@ -160,7 +149,6 @@ const endValidate = () => {
 // For checking
 
 /**
- * check if there are illegal symbols in string
  * @param {string} value checked target
  * @returns {boolean} true if string has illegal symbols
  */
@@ -176,22 +164,16 @@ const checkText = (value) => {
 }
 
 /**
- * check if label is DocuXML label
  * @param {Label} label checked target
- * @returns {boolean} true if label is not DocuXML label
+ * @param {number} index local index of checked target
+ * @returns {boolean} true if detect symbol in label attribute
  */
-const checkLabel = (label) => {
+const checkLabel = (label, index) => {
   // TODO: check attribute
 
   const highlights = {}
 
   for (let key in label.attributes) {
-    // url may have special symbol &
-    if (label.labelName === 'a' && key === 'href') {
-      continue
-    }
-
-    // check attribute [key]
     const value = label.attributes[key]
     const result = findAllByRegex({ value, regex: _illegalSymbolRegex })
     if (result.length > 0) {
@@ -201,7 +183,7 @@ const checkLabel = (label) => {
 
   if (Object.keys(highlights).length > 0) {
     _errorNum += 1
-    _stopInfo = { label, value: label.string, highlights }
+    _stopInfo = { label, value: index, highlights }
     stopValidation({ status: 'error', text: '偵測到標籤屬性中有特殊符號' })
     showDetectAttributeSymbol()
     return true
@@ -226,25 +208,78 @@ const checkLabel = (label) => {
   return false
 }
 
+/**
+ * @param {Label} label checked end label
+ * @param {number} index local index of checked end label
+ * @returns {boolean} true if label is not well form
+ */
+const checkLabelClose = (label, index) => {
+  const { labelName, string } = label
+  const topLabelName = _labelNameStack[_labelNameStack.length - 1]
+
+  if (topLabelName !== labelName) {
+    _errorNum += 1
+    stopValidation({
+      status: 'error',
+      text: '標籤沒有正確嵌套',
+    })
+
+    if (_labelNameStack.includes(labelName)) {
+      // TODO: have no end label
+      addErrorDetail({ content: '偵測到未閉合標籤，請修改。' })
+    } else {
+      // have no start label
+      _stopInfo = { label, value: index }
+      const content = `標籤 ${_symbol['<']}${labelName}${_symbol['>']} 缺少起始標籤，將自動刪除。`
+      addErrorDetail({ content, handleContinue: 'handleFinishDeleteEndLabel()' })
+    }
+
+    return true
+  }
+
+  return false
+}
+
 // For finishing error
 
-/**
- * @param {('text' | 'label')} type handle target
- */
-const handleFinishDetectSymbol = (type) => {
+const handleFinishDetectSymbol = () => {
   const isModifyAll = checkAllHighlightModified()
   if (!isModifyAll) {
     const error = errorElement({ text: '請修正完錯誤再繼續' })
     $(`#error-${_errorNum}__fin`).append(error)
   } else {
-    const oriValueLen = _stopInfo.value.length
-    const actions = updateStopInfo()
+    const oriValueLength = _stopInfo.value.length
     const beforeStr = _xml.substring(0, _validateIndex)
-    const afterStr = _xml.substring(_validateIndex + oriValueLen)
-    const updatedStr = type === 'text' ? _stopInfo.value : generateLabelString(_stopInfo.label)
-    _xml = beforeStr + updatedStr + afterStr
+    const afterStr = _xml.substring(_validateIndex + oriValueLength)
+    const actions = updateStopInfo()
+    _xml = beforeStr + _stopInfo.value + afterStr
     continueValidation(actions)
   }
+}
+
+const handleFinishDetectAttributeSymbol = () => {
+  const isModifyAll = checkAllHighlightModified()
+  if (!isModifyAll) {
+    const error = errorElement({ text: '請修正完錯誤再繼續' })
+    $(`#error-${_errorNum}__fin`).append(error)
+  } else {
+    const oriValueLength = _stopInfo.label.string.length
+    const labelIndex = _validateIndex + _stopInfo.value
+    const beforeStr = _xml.substring(0, labelIndex)
+    const afterStr = _xml.substring(labelIndex + oriValueLength)
+    const actions = updateStopInfo()
+    _xml = beforeStr + generateLabelString(_stopInfo.label) + afterStr
+    continueValidation(actions)
+  }
+}
+
+const handleFinishDeleteEndLabel = () => {
+  const oriValueLength = _stopInfo.label.string.length
+  const labelIndex = _validateIndex + _stopInfo.value
+  const beforeStr = _xml.substring(0, labelIndex)
+  const afterStr = _xml.substring(labelIndex + oriValueLength)
+  _xml = beforeStr + afterStr
+  continueValidation(['刪除'])
 }
 
 const handleFinishCannotIdentifyLabel = () => {

@@ -184,7 +184,7 @@ const showDetectSymbol = () => {
   `
   addErrorDetail({
     content,
-    handleContinue: `handleFinishDetectSymbol('text')`,
+    handleContinue: `handleFinishDetectSymbol()`,
   })
 }
 
@@ -222,7 +222,7 @@ const showDetectAttributeSymbol = () => {
   `
   addErrorDetail({
     content,
-    handleContinue: `handleFinishDetectSymbol('label')`,
+    handleContinue: `handleFinishDetectAttributeSymbol()`,
   })
 }
 
