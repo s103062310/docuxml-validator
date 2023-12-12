@@ -226,6 +226,39 @@ const showDetectAttributeSymbol = () => {
   })
 }
 
+const showDeleteEndLabel = () => {
+  // TODO: 段落資訊
+  const content = `標籤 ${_symbol['<']}${_stopInfo.label.labelName}${_symbol['>']} 缺少起始標籤，將自動刪除。`
+  addErrorDetail({ content, handleContinue: 'handleFinishDeleteEndLabel()' })
+}
+
+const showModifyNoEndLabel = (stackIndex) => {
+  // TODO: 段落資訊
+  const labels = _labelNameStack
+    .map((name) => `${_symbol['<']}${name}${_symbol['>']}`)
+    .slice(stackIndex + 1)
+    .join('、')
+  const content = `
+        偵測到未閉合標籤 ${labels}，請根據實際需求修改 XML 內容：
+        <ul style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--color--gray);">
+          <li>
+            標籤是由特殊符號 ${_symbol['<']} 與 ${_symbol['>']} 夾起來的內容
+            ，例：${_symbol['<']}LabelName${_symbol['>']}。
+          </li>
+          <li>若此段文字不需要標籤，請修改所有 ${_symbol['<']} 和 ${_symbol['>']} 避免使用。</li>
+          <li>
+            若此段文字有標籤需求，請確認標籤有正確嵌套，意即每個起始標籤皆需配對到一個結束標籤 
+            (${_symbol['<']}LabelName${_symbol['>']}...${_symbol['<']}/LabelName${_symbol['>']})，
+            或者自行閉合 (${_symbol['<']}LabelName /${_symbol['>']})，且標籤之間沒有交錯。
+          </li>
+          <li>此類錯誤涉及 XML 編碼，若有修改困難，請來信尋求協助。</li>
+        </ul>
+        <div class="line"></div>
+        <textarea id="error-${_errorNum}__textarea" class="form-control">${_stopInfo.value}</textarea>
+      `
+  addErrorDetail({ content, handleContinue: 'handleFinishModifyNoEndLabel()' })
+}
+
 const showCannotIdentifyLabel = () => {
   const labelStr = `${_symbol['<']}${_stopInfo.label.string}${_symbol['>']}`
   const service = serviceElement({ text: '需要協助嗎？', title: '遇到無法辨識的標籤' })

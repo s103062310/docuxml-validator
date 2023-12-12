@@ -214,7 +214,7 @@ const checkLabel = (label, index) => {
  * @returns {boolean} true if label is not well form
  */
 const checkLabelClose = (label, index) => {
-  const { labelName, string } = label
+  const { labelName } = label
   const topLabelName = _labelNameStack[_labelNameStack.length - 1]
 
   if (topLabelName !== labelName) {
@@ -224,14 +224,32 @@ const checkLabelClose = (label, index) => {
       text: '標籤沒有正確嵌套',
     })
 
-    if (_labelNameStack.includes(labelName)) {
-      // TODO: have no end label
-      addErrorDetail({ content: '偵測到未閉合標籤，請修改。' })
+    const stackIndex = _labelNameStack.indexOf(labelName)
+    if (stackIndex >= 0) {
+      // have not closed label
+
+      // find start label of the end label
+      const beforeStr = _xml.substring(0, _validateIndex)
+      const regex = new RegExp(`<\s*${label.labelName}[^>]*>`, 'g')
+      let start, result
+      while ((result = regex.exec(beforeStr)) !== null) {
+        start = result.index + result[0].length // last matched label of before string
+      }
+
+      // content of the label
+      const end = _validateIndex + index
+      const value = _xml.substring(start, end)
+
+      // roll back progress
+      while (_labelNameStack.length > stackIndex + 1) _labelNameStack.pop()
+      _validateIndex = start
+
+      _stopInfo = { value }
+      showModifyNoEndLabel(stackIndex)
     } else {
       // have no start label
       _stopInfo = { label, value: index }
-      const content = `標籤 ${_symbol['<']}${labelName}${_symbol['>']} 缺少起始標籤，將自動刪除。`
-      addErrorDetail({ content, handleContinue: 'handleFinishDeleteEndLabel()' })
+      showDeleteEndLabel()
     }
 
     return true
@@ -280,6 +298,41 @@ const handleFinishDeleteEndLabel = () => {
   const afterStr = _xml.substring(labelIndex + oriValueLength)
   _xml = beforeStr + afterStr
   continueValidation(['刪除'])
+}
+
+const handleFinishModifyNoEndLabel = () => {
+  const value = /** @type {string} */ ($(`#error-${_errorNum}__textarea`).val())
+
+  // check value is well-form
+  let result
+  const stack = []
+  _labelRegex.lastIndex = 0
+  while ((result = _labelRegex.exec(value)) !== null) {
+    const label = parseLabel(result[0])
+    const { labelType, labelName } = label
+    if (labelType === 'start') {
+      stack.push(labelName)
+    } else if (labelType === 'end') {
+      const top = stack.pop()
+      if (top !== labelName) {
+        const error = errorElement({ text: '請修正完錯誤再繼續' })
+        $(`#error-${_errorNum}__fin`).append(error)
+        return
+      }
+    }
+  }
+  if (stack.length > 0) {
+    const error = errorElement({ text: '請修正完錯誤再繼續' })
+    $(`#error-${_errorNum}__fin`).append(error)
+    return
+  }
+
+  // update
+  const oriValueLength = _stopInfo.value.length
+  const beforeStr = _xml.substring(0, _validateIndex)
+  const afterStr = _xml.substring(_validateIndex + oriValueLength)
+  _xml = beforeStr + value + afterStr
+  continueValidation(['修改'])
 }
 
 const handleFinishCannotIdentifyLabel = () => {

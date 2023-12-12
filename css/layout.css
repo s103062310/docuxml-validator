@@ -76,6 +76,11 @@ a:focus {
   color: var(--color--blue-dark);
 }
 
+textarea {
+  width: 100%;
+  padding: 0.25rem 0.5rem;
+}
+
 .logo {
   height: 100%;
 }
@@ -116,8 +121,7 @@ a:focus {
   margin: 0.25rem 0;
 }
 
-.form-control {
-  display: initial;
+input.form-control {
   width: 3.125rem;
 }
 
