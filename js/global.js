@@ -32,6 +32,7 @@ let _stopInfo = {
   label: {}, // the label which contains errors
   value: '', // the whole substring which contains errors
   highlights: /** @type {Object.<string, HighlightInfo>} */ ({}), // info for each highlights
+  extra: undefined, // extra info needs to be recorded
 }
 
 // self defined data structure

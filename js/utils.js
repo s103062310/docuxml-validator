@@ -65,49 +65,18 @@ const findAllByRegex = ({ value, regex }) => {
 }
 
 /**
- * check all highlights
- * @returns {boolean} is all errors modified or not
+ * highlight targets in giving value
+ * @param {string} key key of highlight information
+ * @param {string} value original string
+ * @returns {string} html of highlighted value
  */
-const checkAllHighlightModified = () => {
-  /**
-   * check highlights of one attribute
-   * @param {HighlightInfo[]} highlight a record in _stopInfo.highlights[key]
-   * @returns {boolean} is all errors in one attribute modified or not
-   */
-  const checkHighlightModified = (highlight) =>
-    highlight.reduce((result, { decision }) => result && Boolean(decision), true)
-
-  const isModifyAll = Object.values(_stopInfo.highlights).reduce(
-    (result, highlight) => result && checkHighlightModified(highlight),
-    true,
-  )
-
-  return isModifyAll
-}
-
-/**
- * update information according to modification
- * @returns {string[]} array of action label
- */
-const updateStopInfo = () => {
-  const actions = []
-
-  Object.entries(_stopInfo.highlights).forEach(([key, highlight]) => {
-    let text = key === 'value' ? _stopInfo.value : _stopInfo.label.attributes[key]
-    highlight.forEach(({ index, decision, result }) => {
-      const beforeStr = text.substring(0, index)
-      const afterStr = text.substring(index + 1)
-      text = beforeStr + result + afterStr
-      if (!actions.includes(decision)) {
-        actions.push(decision)
-      }
-    })
-    if (key === 'value') {
-      _stopInfo.value = text
-    } else {
-      _stopInfo.label.attributes[key] = text
-    }
+const highlightValue = (key, value) => {
+  let text = value
+  _stopInfo.highlights[key].forEach(({ index, target }, i) => {
+    const beforeStr = text.substring(0, index)
+    const afterStr = text.substring(index + 1)
+    const highlight = highlightElement({ attr: key, index: i, text: target })
+    text = `${beforeStr}${highlight}${afterStr}`
   })
-
-  return actions
+  return text
 }
