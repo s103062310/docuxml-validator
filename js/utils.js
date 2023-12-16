@@ -28,13 +28,13 @@ const parseLabel = (string) => {
  * @returns {string} string of a xml label
  */
 const generateLabelString = (label) => {
-  const { labelType: type, labelName: name, attributes } = label
+  const { labelType: type, labelName: name, attributes = {} } = label
   const frontSlash = type === 'end' ? '/' : ''
-  const endSlash = type === 'single' ? '/' : ''
+  const endSlash = type === 'single' ? ' /' : ''
   const attributesStr = Object.entries(attributes)
-    .map(([key, value]) => `${key}="${value}"`)
-    .join(' ')
-  return `<${frontSlash}${name} ${attributesStr} ${endSlash}>`
+    .map(([key, value]) => ` ${key}="${value}"`)
+    .join('')
+  return `<${frontSlash}${name}${attributesStr}${endSlash}>`
 }
 
 /**

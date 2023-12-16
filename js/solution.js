@@ -90,7 +90,7 @@ const handleFinishDeleteEndLabel = () => {
   continueValidation(['刪除'])
 }
 
-const handleFinishModifyNoEndLabel = () => {
+const handleFinishModifyNotClosingLabel = () => {
   const value = /** @type {string} */ ($(`#error-${_errorNum}__textarea`).val())
 
   // check value is well-form
@@ -121,15 +121,25 @@ const handleFinishModifyNoEndLabel = () => {
   continueValidation(['修改'])
 }
 
+const handleFinishDeleteRedundant = () => {
+  _xml = _xml.substring(0, _validateIndex)
+  continueValidation(['刪除'])
+}
+
+const handleFinishAddClosingLabels = () => {
+  const labels = _labelNameStack
+    .map((name) => generateLabelString({ labelType: 'end', labelName: name }))
+    .reverse()
+    .map((str) => '\n' + str)
+    .join('')
+  _xml = _xml + labels
+  continueValidation(['修改'])
+}
+
 const handleFinishCannotIdentifyLabel = () => {
   // TODO: hint modal
   // ignore label
   // _xmlArchitecture[_stopInfo.parentLabelName].push(_stopInfo.labelName)
 
   continueValidation(['略過'])
-}
-
-const handleFinishRedundant = () => {
-  _xml = _xml.substring(0, _validateIndex)
-  continueValidation(['刪除'])
 }

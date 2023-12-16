@@ -41,8 +41,8 @@ let _stopInfo = {
  * @typedef {Object} Label
  * @property {('start' | 'end' | 'single')} labelType
  * @property {string} labelName
- * @property {string} string
- * @property {Object.<string, string>} attributes
+ * @property {string} [string]
+ * @property {Object.<string, string>} [attributes]
  */
 
 /**

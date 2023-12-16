@@ -62,7 +62,25 @@ const showModifyNotClosingLabel = () => {
     <div class="line"></div>
     <textarea id="error-${_errorNum}__textarea" class="form-control">${_stopInfo.value}</textarea>
   `
-  addErrorDetail({ content, handleContinue: 'handleFinishModifyNoEndLabel()' })
+  addErrorDetail({ content, handleContinue: 'handleFinishModifyNotClosingLabel()' })
+}
+
+const showDeleteRedundant = () => {
+  const content = `
+    在標籤外偵測到多餘的文字，將自動刪除該內容。
+    <div class="line"></div>
+    ${_stopInfo.value.replace(/\n/g, '<br/>')}
+  `
+  addErrorDetail({ content, handleContinue: 'handleFinishDeleteRedundant()' })
+}
+
+const showAddClosingLabels = () => {
+  const labels = _labelNameStack
+    .map((name) => `${_symbol['<']}${name}${_symbol['>']}`)
+    .reverse()
+    .join('、')
+  const content = `${labels} 缺少結束標籤，將自動補在文件尾端。`
+  addErrorDetail({ content, handleContinue: 'handleFinishAddClosingLabels()' })
 }
 
 const showCannotIdentifyLabel = () => {

@@ -2,7 +2,7 @@
  * main validation loop
  */
 const validate = () => {
-  while (_validateIndex < _xml.length) {
+  while (_validateIndex <= _xml.length) {
     // find label
     _labelRegex.lastIndex = 0
     const remainXml = _xml.substring(_validateIndex)
@@ -10,33 +10,8 @@ const validate = () => {
 
     if (result === null) {
       // cannot find anymore label
-      // TODO: stack not empty
-      if (_labelNameStack.length > 0) {
-        _errorNum += 1
-        stopValidation({
-          status: 'error',
-          text: '標籤沒有正確嵌套',
-        })
-        addErrorDetail({ content: '此部分尚在開發中，請洽專人協助。' })
-        return
-      }
-
-      // TODO: check remaining string
-      const finalString = _xml.substring(_validateIndex).trim()
-      if (finalString) {
-        _errorNum += 1
-        stopValidation({
-          status: 'error',
-          text: '偵測到多餘的內容',
-        })
-        const content = `
-          在 DocuXML 標籤外偵測到多餘的文字，工具將自動刪除該內容。
-          <div class="line"></div>
-          ${finalString.replace(/\n/g, '<br/>')}
-        `
-        addErrorDetail({ content, handleContinue: 'handleFinishRedundant()' })
-        return
-      }
+      if (checkRedundant()) return // remaining string exist
+      if (checkStack()) return // stack not empty
       break
     } else {
       // check string between last label and this label
@@ -96,8 +71,6 @@ const validate = () => {
     } else if (labelType === 'end') {
       if (checkLabelClose(label, result.index)) return
       _labelNameStack.pop()
-    } else {
-      // TODO: single label
     }
 
     // update
@@ -144,4 +117,6 @@ const endValidate = () => {
   if ($('.status-row:last-child').length > 0) {
     $('#download-btn').show()
   }
+
+  // TODO: error detail 處理 (finish 也是)
 }

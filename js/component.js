@@ -109,6 +109,7 @@ const serviceElement = ({ text, title = '問題諮詢' } = {}) => {
  */
 const highlightElement = ({ attr, index, text, isSolved = false }) => {
   // html need prevent '\n'
+  // TODO: 重設
   const modifyBtn = `<button class="btn" onclick="handleShowModify('${attr}', ${index})">修改</button>`
   const deleteBtn = `<button class="btn" onclick="handleDelete('${attr}', ${index})">刪除</button>`
   const keepBtn = `<button class="btn" onclick="handleKeep('${attr}', ${index})">保留</button>`

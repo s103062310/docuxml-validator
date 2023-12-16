@@ -106,3 +106,31 @@ const checkLabelClose = (label, index) => {
 
   return false
 }
+
+/**
+ * @returns {boolean} true if there is redundant text in the end of xml
+ */
+const checkRedundant = () => {
+  const finalString = _xml.substring(_validateIndex).trim()
+  if (finalString) {
+    _errorNum += 1
+    _stopInfo = { value: finalString }
+    stopValidation({ status: 'error', text: '偵測到多餘的內容' })
+    showDeleteRedundant()
+    return true
+  }
+  return false
+}
+
+/**
+ * @returns {boolean} true if there is remaining label in stack
+ */
+const checkStack = () => {
+  if (_labelNameStack.length > 0) {
+    _errorNum += 1
+    stopValidation({ status: 'error', text: '標籤沒有正確嵌套' })
+    showAddClosingLabels()
+    return true
+  }
+  return false
+}
