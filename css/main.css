@@ -41,11 +41,16 @@
 }
 
 .label {
-  background-color: var(--color--gray-light);
+  background-color: var(--color--blue-light);
   color: var(--color--white);
-  font-size: 0.75rem;
   border-radius: 0.25rem;
   padding: 0.125rem 0.25rem;
+  margin-right: 0.5rem;
+}
+
+.label--action {
+  background-color: var(--color--gray-light);
+  font-size: 0.75rem;
   margin-left: 0.5rem;
 }
 
@@ -69,7 +74,6 @@
   display: inline-flex;
   position: relative;
   top: 0.25rem;
-  left: 0.5rem;
   padding: 0.125rem;
   border-radius: 50%;
   background-color: var(--color--blue);

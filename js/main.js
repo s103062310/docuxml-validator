@@ -2,7 +2,7 @@
  * main validation loop
  */
 const validate = () => {
-  while (_validateIndex < _xml.length) {
+  while (_validateIndex <= _xml.length) {
     // find label
     _labelRegex.lastIndex = 0
     const remainXml = _xml.substring(_validateIndex)
@@ -10,33 +10,8 @@ const validate = () => {
 
     if (result === null) {
       // cannot find anymore label
-      // TODO: stack not empty
-      if (_labelNameStack.length > 0) {
-        _errorNum += 1
-        stopValidation({
-          status: 'error',
-          text: '標籤沒有正確嵌套',
-        })
-        addErrorDetail({ content: '此部分尚在開發中，請洽專人協助。' })
-        return
-      }
-
-      // TODO: check remaining string
-      const finalString = _xml.substring(_validateIndex).trim()
-      if (finalString) {
-        _errorNum += 1
-        stopValidation({
-          status: 'error',
-          text: '偵測到多餘的內容',
-        })
-        const content = `
-          在 DocuXML 標籤外偵測到多餘的文字，工具將自動刪除該內容。
-          <div class="line"></div>
-          ${finalString.replace(/\n/g, '<br/>')}
-        `
-        addErrorDetail({ content, handleContinue: 'handleFinishRedundant' })
-        return
-      }
+      if (checkRedundant()) return // remaining string exist
+      if (checkStack()) return // stack not empty
       break
     } else {
       // check string between last label and this label
@@ -47,7 +22,7 @@ const validate = () => {
     // parse label
     const label = parseLabel(result[0])
     const { labelType, labelName } = label
-    if (checkLabel(label)) return
+    if (checkLabel(label, result.index)) return
 
     if (labelType === 'start') {
       // const stackLength = _labelNameStack.length
@@ -94,21 +69,8 @@ const validate = () => {
 
       _labelNameStack.push(labelName)
     } else if (labelType === 'end') {
-      const topLabelName = _labelNameStack.pop()
-
-      // TODO: handle error
-      if (topLabelName !== labelName) {
-        console.log('error!', labelName)
-        _errorNum += 1
-        stopValidation({
-          status: 'error',
-          text: '標籤沒有正確嵌套',
-        })
-        addErrorDetail({ content: '此部分尚在開發中，請洽專人協助。' })
-        return
-      }
-    } else {
-      // TODO: single label
+      if (checkLabelClose(label, result.index)) return
+      _labelNameStack.pop()
     }
 
     // update
@@ -155,104 +117,6 @@ const endValidate = () => {
   if ($('.status-row:last-child').length > 0) {
     $('#download-btn').show()
   }
-}
 
-// For checking
-
-/**
- * check if there are illegal symbols in string
- * @param {string} value checked target
- * @returns {boolean} true if string has illegal symbols
- */
-const checkText = (value) => {
-  const highlights = findAllByRegex({ value, regex: _illegalSymbolRegex })
-  if (highlights.length > 0) {
-    _errorNum += 1
-    _stopInfo = { value, highlights }
-    stopValidation({ status: 'error', text: '偵測到特殊符號' })
-    showDetectSymbol()
-  }
-  return highlights.length > 0
-}
-
-/**
- * check if label is DocuXML label
- * @param {Label} label checked target
- * @returns {boolean} true if label is not DocuXML label
- */
-const checkLabel = (label) => {
-  // TODO: check attribute
-  for (let key in label.attributes) {
-    const value = label.attributes[key]
-    const highlights = findAllByRegex({
-      value,
-      regex: label.labelName === 'a' ? new RegExp(/<|>/g) : _illegalSymbolRegex,
-    })
-    if (highlights.length > 0) {
-      _errorNum += 1
-      stopValidation({ status: 'error', text: '偵測到標籤屬性中有特殊符號' })
-      addErrorDetail({ content: '此部分尚在開發中，請洽專人協助。' })
-      return true
-    }
-  }
-
-  // const isDocuLabel = _allDocuLabel.reduce((flag, docuLabel) => {
-  //   const regex = new RegExp(docuLabel)
-  //   return regex.test(label.labelName) || flag
-  // }, false)
-
-  // if (!isDocuLabel) {
-  //   _errorNum += 1
-  //   _stopInfo = { label, highlights: [{}] }
-  //   stopValidation({
-  //     status: 'error',
-  //     text: `無法辨識標籤 ${_symbol['<']}${label.labelName}${_symbol['>']}`,
-  //   })
-  //   showCannotIdentifyLabel()
-  //   return true
-  // }
-
-  return false
-}
-
-// For finishing error
-
-const handleFinishDetectSymbol = () => {
-  const isModifyAll = _stopInfo.highlights.reduce(
-    (result, { decision }) => result && Boolean(decision),
-    true,
-  )
-
-  if (!isModifyAll) {
-    const error = errorElement({ text: '請修正完錯誤再繼續' })
-    $(`#error-${_errorNum}__fin`).append(error)
-  } else {
-    const actions = []
-
-    // update xml
-    _stopInfo.highlights.forEach(({ index, decision, result }) => {
-      const position = _validateIndex + index
-      const beforeStr = _xml.substring(0, position)
-      const afterStr = _xml.substring(position + 1)
-      _xml = beforeStr + result + afterStr
-      if (!actions.includes(decision)) {
-        actions.push(decision)
-      }
-    })
-
-    continueValidation(actions)
-  }
-}
-
-const handleFinishCannotIdentifyLabel = () => {
-  // TODO: hint modal
-  // ignore label
-  // _xmlArchitecture[_stopInfo.parentLabelName].push(_stopInfo.labelName)
-
-  continueValidation(['略過'])
-}
-
-const handleFinishRedundant = () => {
-  _xml = _xml.substring(0, _validateIndex)
-  continueValidation(['刪除'])
+  // TODO: error detail 處理 (finish 也是)
 }

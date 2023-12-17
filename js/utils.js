@@ -1,7 +1,7 @@
 /**
  * parse xml label from original string
  * @param {string} string string of a xml label
- * @return {Label} parsed label data
+ * @returns {Label} parsed label data
  */
 const parseLabel = (string) => {
   const labelStr = string.slice(1, -1).trim() // remove '<' & '>'
@@ -23,6 +23,21 @@ const parseLabel = (string) => {
 }
 
 /**
+ * generate label string from parsed label object
+ * @param {Label} label parsed label data
+ * @returns {string} string of a xml label
+ */
+const generateLabelString = (label) => {
+  const { labelType: type, labelName: name, attributes = {} } = label
+  const frontSlash = type === 'end' ? '/' : ''
+  const endSlash = type === 'single' ? ' /' : ''
+  const attributesStr = Object.entries(attributes)
+    .map(([key, value]) => ` ${key}="${value}"`)
+    .join('')
+  return `<${frontSlash}${name}${attributesStr}${endSlash}>`
+}
+
+/**
  * get now parent label
  * @returns {string} parent label name
  */
@@ -37,7 +52,7 @@ const getParentLabel = () => {
  * @param {Object} input
  * @param {string} input.value string which will be searched
  * @param {RegExp} input.regex target pattern which is wanted
- * @return {SearchResult[]} targets array
+ * @returns {SearchResult[]} targets array
  */
 const findAllByRegex = ({ value, regex }) => {
   const targets = []
@@ -47,4 +62,21 @@ const findAllByRegex = ({ value, regex }) => {
   }
   targets.reverse()
   return targets
+}
+
+/**
+ * highlight targets in giving value
+ * @param {string} key key of highlight information
+ * @param {string} value original string
+ * @returns {string} html of highlighted value
+ */
+const highlightValue = (key, value) => {
+  let text = value
+  _stopInfo.highlights[key].forEach(({ index, target }, i) => {
+    const beforeStr = text.substring(0, index)
+    const afterStr = text.substring(index + 1)
+    const highlight = highlightElement({ attr: key, index: i, text: target })
+    text = `${beforeStr}${highlight}${afterStr}`
+  })
+  return text
 }
