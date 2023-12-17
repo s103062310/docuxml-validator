@@ -119,6 +119,9 @@
 
 .highlight.solved {
   background-color: var(--color--success);
+}
+
+.highlight.finished {
   cursor: default;
 }
 

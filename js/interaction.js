@@ -52,6 +52,19 @@ const handleKeep = (attr, index) => {
   $(`#error-${_errorNum}__highlight-${attr}${index}`).replaceWith(highlight)
 }
 
+/**
+ * trigger when user choose to reset the highlight
+ * @param {string} attr target attribute in stop info
+ * @param {number} index target index in attribute's symbol array of stop info
+ */
+const handleReset = (attr, index) => {
+  delete _stopInfo.highlights[attr][index].decision
+  delete _stopInfo.highlights[attr][index].result
+  const text = _stopInfo.highlights[attr][index].target
+  const highlight = highlightElement({ attr, index, text })
+  $(`#error-${_errorNum}__highlight-${attr}${index}`).replaceWith(highlight)
+}
+
 // For modify ui
 
 /**
@@ -110,37 +123,13 @@ const handleModify = (attr, index) => {
 // For detect symbol tools
 
 /**
- * trigger when user click delete all button
+ * trigger when user click handle all tool buttons
+ * @param {Function} func handle function
  */
-const handleDeleteAll = () => {
+const handleAll = (func) => {
   Object.keys(_stopInfo.highlights).forEach((attr) => {
     _stopInfo.highlights[attr].forEach((_, index) => {
-      handleDelete(attr, index)
-    })
-  })
-}
-
-/**
- * trigger when user click keep all button
- */
-const handleKeepAll = () => {
-  Object.keys(_stopInfo.highlights).forEach((attr) => {
-    _stopInfo.highlights[attr].forEach((_, index) => {
-      handleKeep(attr, index)
-    })
-  })
-}
-
-/**
- * trigger when user click reset button
- */
-const handleReset = () => {
-  const newHighlights = {}
-  Object.keys(_stopInfo.highlights).forEach((attr) => {
-    newHighlights[attr] = _stopInfo.highlights[attr].map(({ index, target }, i) => {
-      const highlight = highlightElement({ attr, index: i, text: target })
-      $(`#error-${_errorNum}__highlight-${attr}${i}`).replaceWith(highlight)
-      return { index, target }
+      func(attr, index)
     })
   })
 }
