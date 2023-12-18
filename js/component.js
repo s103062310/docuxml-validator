@@ -116,7 +116,7 @@ const highlightElement = ({ attr, index, text, isSolved = false, isFinish = fals
   const resetBtn = `<button class="btn" onclick="handleReset('${attr}', ${index})">重設</button>`
   const btns = isSolved ? resetBtn : modifyBtn + deleteBtn + keepBtn
   const choices = `<div class="choices" style="display: none">${btns}</div>`
-  const ID = `error-${_errorNum}__highlight-${attr}${index}`
+  const ID = `error-${_errorNum}__${attr}${index}`
   const onclick = `onclick="$(this).find('.choices').toggle()"`
   const className = `highlight ${isSolved || isFinish ? 'solved' : ''}`
   return isFinish
@@ -131,9 +131,10 @@ const highlightElement = ({ attr, index, text, isSolved = false, isFinish = fals
  * @returns {string} html of modify ui
  */
 const modifyElement = ({ attr, index }) => {
+  const ID = `error-${_errorNum}__${attr}${index}`
   const input = `
     <input 
-      id="modify-${attr}${index}__input" 
+      id="${ID}__input" 
       class="form-control modify" 
       type="text" 
       value="${_stopInfo.highlights[attr][index].target}" 
@@ -143,7 +144,7 @@ const modifyElement = ({ attr, index }) => {
   const finBtn = `<button class="btn modify" onclick="handleModify('${attr}', ${index})">確定</button>`
   const cancelBtn = `<button class="btn btn-outline modify" onclick="handleCancelModify('${attr}', ${index})">取消</button>`
   const modify = `<div class="modify-group">${input}${finBtn}${cancelBtn}</div>`
-  return `<div id="modify-${attr}${index}" class="field">${modify}</div>`
+  return `<div id="${ID}" class="field">${modify}</div>`
 }
 
 /**

@@ -1,6 +1,5 @@
 const showDetectSymbol = () => {
   // TODO: 段落資訊
-  // TODO: 仔細思考工具列的功能
   const text = highlightValue('value', _stopInfo.value)
   const content = `
     ${toolBarElement()}
@@ -14,7 +13,6 @@ const showDetectSymbol = () => {
 
 const showDetectAttributeSymbol = () => {
   // TODO: 段落資訊
-  // TODO: 仔細思考工具列的功能
   const content = `
     ${toolBarElement()}
     標籤名稱：<span class="label">${_stopInfo.label.labelName}</span>

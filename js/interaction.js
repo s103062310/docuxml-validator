@@ -24,7 +24,7 @@ const handleBlurContinue = () => {
  */
 const handleShowModify = (attr, index) => {
   const modify = modifyElement({ attr, index })
-  $(`#error-${_errorNum}__highlight-${attr}${index}`).replaceWith(modify)
+  $(`#error-${_errorNum}__${attr}${index}`).replaceWith(modify)
 }
 
 /**
@@ -36,7 +36,7 @@ const handleDelete = (attr, index) => {
   _stopInfo.highlights[attr][index].decision = '刪除'
   _stopInfo.highlights[attr][index].result = ''
   const highlight = highlightElement({ attr, index, text: '&emsp;', isSolved: true })
-  $(`#error-${_errorNum}__highlight-${attr}${index}`).replaceWith(highlight)
+  $(`#error-${_errorNum}__${attr}${index}`).replaceWith(highlight)
 }
 
 /**
@@ -49,7 +49,7 @@ const handleKeep = (attr, index) => {
   _stopInfo.highlights[attr][index].decision = '保留'
   _stopInfo.highlights[attr][index].result = result
   const highlight = highlightElement({ attr, index, text: result, isSolved: true })
-  $(`#error-${_errorNum}__highlight-${attr}${index}`).replaceWith(highlight)
+  $(`#error-${_errorNum}__${attr}${index}`).replaceWith(highlight)
 }
 
 /**
@@ -62,7 +62,7 @@ const handleReset = (attr, index) => {
   delete _stopInfo.highlights[attr][index].result
   const text = _stopInfo.highlights[attr][index].target
   const highlight = highlightElement({ attr, index, text })
-  $(`#error-${_errorNum}__highlight-${attr}${index}`).replaceWith(highlight)
+  $(`#error-${_errorNum}__${attr}${index}`).replaceWith(highlight)
 }
 
 // For modify ui
@@ -74,8 +74,9 @@ const handleReset = (attr, index) => {
  * @param {number} index target index in attribute's symbol array of stop info
  */
 const handleChangeModifyInput = (attr, index) => {
-  $(`#modify-${attr}${index}__input`).removeClass('error')
-  $(`#modify-${attr}${index} .error-msg`).remove()
+  const ID = `#error-${_errorNum}__${attr}${index}`
+  $(`${ID}__input`).removeClass('error')
+  $(`${ID} .error-msg`).remove()
 }
 
 /**
@@ -84,9 +85,10 @@ const handleChangeModifyInput = (attr, index) => {
  * @param {number} index target index in attribute's symbol array of stop info
  */
 const handleCancelModify = (attr, index) => {
+  const ID = `#error-${_errorNum}__${attr}${index}`
   const text = _stopInfo.highlights[attr][index].target
   const highlight = highlightElement({ attr, index, text })
-  $(`#modify-${attr}${index}`).replaceWith(highlight)
+  $(ID).replaceWith(highlight)
 }
 
 /**
@@ -95,8 +97,8 @@ const handleCancelModify = (attr, index) => {
  * @param {number} index target index in attribute's symbol array of stop info
  */
 const handleModify = (attr, index) => {
-  const id = `#modify-${attr}${index}`
-  const inputId = `#modify-${attr}${index}__input`
+  const ID = `#error-${_errorNum}__${attr}${index}`
+  const inputId = `${ID}__input`
   const value = /** @type {string} */ ($(inputId).val())
   if (_illegalSymbolRegex.test(value)) {
     const error = errorElement({
@@ -104,19 +106,19 @@ const handleModify = (attr, index) => {
       iconStyle: 'margin-left: 0.25rem',
     })
     $(inputId).addClass('error')
-    $(id).append(error)
+    $(ID).append(error)
   } else if (value === '') {
     const error = errorElement({
       text: '必填',
       iconStyle: 'margin-left: 0.25rem',
     })
     $(inputId).addClass('error')
-    $(id).append(error)
+    $(ID).append(error)
   } else {
     _stopInfo.highlights[attr][index].decision = '修改'
     _stopInfo.highlights[attr][index].result = value
     const highlight = highlightElement({ attr, index, text: value, isSolved: true })
-    $(id).replaceWith(highlight)
+    $(ID).replaceWith(highlight)
   }
 }
 
@@ -128,8 +130,12 @@ const handleModify = (attr, index) => {
  */
 const handleAll = (func) => {
   Object.keys(_stopInfo.highlights).forEach((attr) => {
-    _stopInfo.highlights[attr].forEach((_, index) => {
-      func(attr, index)
+    _stopInfo.highlights[attr].forEach((highlight, index) => {
+      const isModified = Boolean(highlight.decision)
+      const isHighlight = $(`#error-${_errorNum}__${attr}${index}`).hasClass('highlight')
+      const executable =
+        (func.name === 'handleReset' && isModified) || (func.name !== 'handleReset' && !isModified)
+      if (executable && isHighlight) func(attr, index) // 略過 modify ui
     })
   })
 }
@@ -138,5 +144,5 @@ const handleAll = (func) => {
 
 const handleIgnore = () => {
   // _stopInfo.highlights[0].decision = '忽略'
-  // $(`#error-${_errorNum}__highlight-${index}`).replaceWith(highlight)
+  // $(`#error-${_errorNum}__${index}`).replaceWith(highlight)
 }
