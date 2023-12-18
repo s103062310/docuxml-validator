@@ -118,7 +118,7 @@ const highlightElement = ({ attr, index, text, isSolved = false, isFinish = fals
   const choices = `<div class="choices" style="display: none">${btns}</div>`
   const ID = `error-${_errorNum}__${attr}${index}`
   const onclick = `onclick="$(this).find('.choices').toggle()"`
-  const className = `highlight ${isSolved || isFinish ? 'solved' : ''}`
+  const className = `highlight ${isSolved ? 'solved' : ''}`
   return isFinish
     ? `<div id="${ID}" class="${className} finished">${text}</div>`
     : `<div id="${ID}" class="${className}" ${onclick}>${text}${choices}</div>`

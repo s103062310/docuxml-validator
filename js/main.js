@@ -95,13 +95,9 @@ const stopValidation = (row) => {
  * @param {string[]} actions action labels text
  */
 const continueValidation = (actions) => {
-  // reset ui
-  $(`#error-${_errorNum}__tools`).remove()
-  $(`#error-${_errorNum}__fin`).remove()
+  resetUIForValidation()
   addActionLabelsAndCollapse(actions)
   addStatusRow()
-
-  // restart
   validate()
 }
 
@@ -109,14 +105,31 @@ const continueValidation = (actions) => {
  * end the whole validate procedure
  */
 const endValidate = () => {
-  $(`#error-${_errorNum}__tools`).remove()
-  $(`#error-${_errorNum}__fin`).remove()
+  resetUIForValidation()
   $('#upload-btn').show()
 
-  // 驗證成功才顯示下載按鈕
   if ($('.status-row:last-child').length > 0) {
+    // validation success
     $('#download-btn').show()
+  } else {
+    addActionLabelsAndCollapse(['未完成'])
   }
+}
 
-  // TODO: error detail 處理 (finish 也是)
+const resetUIForValidation = () => {
+  $(`#error-${_errorNum}__fin`).remove()
+
+  // specific symbol
+  $(`#error-${_errorNum}__tools`).remove()
+  Object.entries(_stopInfo.highlights || {}).forEach(([attr, highlightsArr]) => {
+    highlightsArr.forEach(({ target, decision, result }, index) => {
+      const isSolved = Boolean(decision)
+      const text = isSolved ? result || '&emsp;' : target
+      const finishedHighlight = highlightElement({ attr, index, text, isSolved, isFinish: true })
+      $(`#error-${_errorNum}__${attr}${index}`).replaceWith(finishedHighlight)
+    })
+  })
+
+  // not well form
+  $(`#error-${_errorNum}__textarea`).attr('disabled', 'disabled')
 }
