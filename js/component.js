@@ -42,7 +42,7 @@ const addStatusRow = ({ status = 'loading', text = '驗證中...' } = {}) => {
       <div class="status-row__text">${text}</div>
     </div>
   `
-  $('#content').append(html)
+  $('main').append(html)
 }
 
 /**
@@ -64,7 +64,7 @@ const addErrorDetail = ({ content, handleContinue }) => {
       </div>
     </div>
   `
-  $('#content').append(`<div class="detail">${html}</div>`)
+  $('main').append(`<div class="detail">${html}</div>`)
 }
 
 const addErrorInFinish = () => {
@@ -105,20 +105,23 @@ const serviceElement = ({ text, title = '問題諮詢' } = {}) => {
  * @param {number} input.index target index in attribute's symbol array of stop info
  * @param {string} input.text text which will be displayed in highlight label
  * @param {boolean} [input.isSolved] highlight style, normal or solved
+ * @param {boolean} [input.isFinish] is this highlight in processing or finished
  * @returns {string} html of highlight block
  */
-const highlightElement = ({ attr, index, text, isSolved = false }) => {
+const highlightElement = ({ attr, index, text, isSolved = false, isFinish = false }) => {
   // html need prevent '\n'
-  // TODO: 重設
-  const modifyBtn = `<button class="btn" onclick="handleShowModify('${attr}', ${index})">修改</button>`
-  const deleteBtn = `<button class="btn" onclick="handleDelete('${attr}', ${index})">刪除</button>`
-  const keepBtn = `<button class="btn" onclick="handleKeep('${attr}', ${index})">保留</button>`
-  const choices = `<div class="choices" style="display: none">${modifyBtn}${deleteBtn}${keepBtn}</div>`
-  const ID = `error-${_errorNum}__highlight-${attr}${index}`
+  const modifyBtn = `<button class="btn" onclick="handleShowModify('${attr}', ${index})"><i class="bi bi-pencil-fill"></i>修改</button>`
+  const deleteBtn = `<button class="btn" onclick="handleDelete('${attr}', ${index})"><i class="bi bi-trash-fill"></i>刪除</button>`
+  const keepBtn = `<button class="btn" onclick="handleKeep('${attr}', ${index})"><i class="bi bi-clipboard-check-fill"></i>保留</button>`
+  const resetBtn = `<button class="btn" onclick="handleReset('${attr}', ${index})"><i class="bi bi-reply-fill"></i>重設</button>`
+  const btns = isSolved ? resetBtn : modifyBtn + deleteBtn + keepBtn
+  const choices = `<div class="choices" style="display: none">${btns}</div>`
+  const ID = `error-${_errorNum}__${attr}${index}`
   const onclick = `onclick="$(this).find('.choices').toggle()"`
-  return isSolved
-    ? `<div id="${ID}" class="highlight solved">${text}</div>`
-    : `<div id="${ID}" class="highlight" ${onclick}>${text}${choices}</div>`
+  const className = `highlight ${isSolved ? 'solved' : ''}`
+  return isFinish
+    ? `<div id="${ID}" class="${className} finished">${text}</div>`
+    : `<div id="${ID}" class="${className}" ${onclick}>${text}${choices}</div>`
 }
 
 /**
@@ -128,9 +131,10 @@ const highlightElement = ({ attr, index, text, isSolved = false }) => {
  * @returns {string} html of modify ui
  */
 const modifyElement = ({ attr, index }) => {
+  const ID = `error-${_errorNum}__${attr}${index}`
   const input = `
     <input 
-      id="modify-${attr}${index}__input" 
+      id="${ID}__input" 
       class="form-control modify" 
       type="text" 
       value="${_stopInfo.highlights[attr][index].target}" 
@@ -140,7 +144,7 @@ const modifyElement = ({ attr, index }) => {
   const finBtn = `<button class="btn modify" onclick="handleModify('${attr}', ${index})">確定</button>`
   const cancelBtn = `<button class="btn btn-outline modify" onclick="handleCancelModify('${attr}', ${index})">取消</button>`
   const modify = `<div class="modify-group">${input}${finBtn}${cancelBtn}</div>`
-  return `<div id="modify-${attr}${index}" class="field">${modify}</div>`
+  return `<div id="${ID}" class="field">${modify}</div>`
 }
 
 /**
@@ -151,8 +155,7 @@ const modifyElement = ({ attr, index }) => {
  */
 const errorElement = ({ text, iconStyle }) => `
   <div class="error-msg">
-    <i class="bi bi-x-circle-fill" style="${iconStyle}"></i>
-    ${text}
+    <i class="bi bi-x-circle-fill" style="${iconStyle}"></i>${text}
   </div>
 `
 
@@ -164,9 +167,9 @@ const toolBarElement = () => `
       '、',
     )} 為 xml 格式中用來辨認標籤的符號，請使用工具列或者點擊以下文本中標示出的符號做更改：
     <div id="error-${_errorNum}__tools" class="group" style="margin-top: 0.75rem">
-      <button class="btn" onclick="handleDeleteAll()">全部刪除</button>
-      <button class="btn" onclick="handleKeepAll()">全部保留</button>
-      <button class="btn" onclick="handleReset()">重設</button>
+      <button class="btn" onclick="handleAll(handleDelete)"><i class="bi bi-trash-fill"></i>全部刪除</button>
+      <button class="btn" onclick="handleAll(handleKeep)"><i class="bi bi-clipboard-check-fill"></i>全部保留</button>
+      <button class="btn" onclick="handleAll(handleReset)"><i class="bi bi-reply-fill"></i>全部重設</button>
     </div>
     <div class="line"></div>
   `

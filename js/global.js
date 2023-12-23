@@ -4,6 +4,7 @@ const _symbol = {
   '>': '&gt;',
   '&': '&amp;',
   '"': '&quot;',
+  ' ': '&nbsp;',
 }
 
 /** @type {RegExp} regular expression of global illegal symbol  */

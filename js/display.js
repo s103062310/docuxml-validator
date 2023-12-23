@@ -1,6 +1,5 @@
 const showDetectSymbol = () => {
   // TODO: 段落資訊
-  // TODO: 仔細思考工具列的功能
   const text = highlightValue('value', _stopInfo.value)
   const content = `
     ${toolBarElement()}
@@ -14,7 +13,6 @@ const showDetectSymbol = () => {
 
 const showDetectAttributeSymbol = () => {
   // TODO: 段落資訊
-  // TODO: 仔細思考工具列的功能
   const content = `
     ${toolBarElement()}
     標籤名稱：<span class="label">${_stopInfo.label.labelName}</span>
@@ -44,6 +42,7 @@ const showDeleteEndLabel = () => {
 const showModifyNotClosingLabel = () => {
   // TODO: 段落資訊
   const labels = _stopInfo.extra.map((name) => `${_symbol['<']}${name}${_symbol['>']}`).join('、')
+  const rowNum = _stopInfo.value.split('\n').length
   const content = `
     偵測到未閉合標籤 ${labels}，請根據實際需求修改 XML 內容：
     <ul style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--color--gray);">
@@ -60,9 +59,45 @@ const showModifyNotClosingLabel = () => {
       <li>此類錯誤涉及 XML 編碼，若有修改困難，請來信尋求協助。</li>
     </ul>
     <div class="line"></div>
-    <textarea id="error-${_errorNum}__textarea" class="form-control">${_stopInfo.value}</textarea>
+    <div class="textarea__container">
+      <textarea id="error-${_errorNum}__textarea" class="form-control" rows="${rowNum}">
+        ${_stopInfo.value}
+      </textarea>
+      <div class="textarea__backdrop" style="height: ${rowNum * 24}px">
+        <div class="textarea__mark"></div>
+      </div>
+    </div>
   `
   addErrorDetail({ content, handleContinue: 'handleFinishModifyNotClosingLabel()' })
+
+  // textarea marks: https://codersblock.com/blog/highlight-text-inside-a-textarea/
+  const textarea = $(`#error-${_errorNum}__textarea`)
+  const handleInput = () => {
+    const text = /** @type {string} */ (textarea.val())
+    let markedText = text
+      .replace(/</g, _symbol['<'])
+      .replace(/>/g, _symbol['>'])
+      .replace(/\n$/g, '\n\n')
+    _stopInfo.extra.forEach((name) => {
+      let result
+      const regex = new RegExp(`${_symbol['<']}\s*${name}[^${_symbol['>']}]*${_symbol['>']}`, 'g')
+      while ((result = regex.exec(markedText)) !== null) {
+        const beforeStr = markedText.substring(0, result.index)
+        const afterStr = markedText.substring(result.index + result[0].length)
+        markedText = `${beforeStr}<mark>${result[0]}</mark>${afterStr}`
+      }
+    })
+    $('.textarea__mark').html(markedText)
+  }
+  const handleScroll = () => {
+    var scrollTop = textarea.scrollTop()
+    $('.textarea__backdrop').scrollTop(scrollTop)
+  }
+  textarea.on({
+    input: handleInput,
+    scroll: handleScroll,
+  })
+  handleInput()
 }
 
 const showDeleteRedundant = () => {
