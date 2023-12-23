@@ -89,12 +89,12 @@ const checkLabelClose = (label, index) => {
       const end = _validateIndex + index
       const value = _xml.substring(start, end)
 
+      _stopInfo = { value, extra: _labelNameStack.slice(stackIndex + 1) }
+      showModifyNotClosingLabel()
+
       // roll back progress
       while (_labelNameStack.length > stackIndex + 1) _labelNameStack.pop()
       _validateIndex = start
-
-      _stopInfo = { value, extra: _labelNameStack.slice(stackIndex + 1) }
-      showModifyNotClosingLabel()
     } else {
       // have no start label
       _stopInfo = { label, extra: index }

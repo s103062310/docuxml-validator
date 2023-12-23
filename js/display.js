@@ -42,6 +42,7 @@ const showDeleteEndLabel = () => {
 const showModifyNotClosingLabel = () => {
   // TODO: 段落資訊
   const labels = _stopInfo.extra.map((name) => `${_symbol['<']}${name}${_symbol['>']}`).join('、')
+  const rowNum = _stopInfo.value.split('\n').length
   const content = `
     偵測到未閉合標籤 ${labels}，請根據實際需求修改 XML 內容：
     <ul style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--color--gray);">
@@ -58,7 +59,7 @@ const showModifyNotClosingLabel = () => {
       <li>此類錯誤涉及 XML 編碼，若有修改困難，請來信尋求協助。</li>
     </ul>
     <div class="line"></div>
-    <textarea id="error-${_errorNum}__textarea" class="form-control">${_stopInfo.value}</textarea>
+    <textarea id="error-${_errorNum}__textarea" class="form-control" rows="${rowNum}">${_stopInfo.value}</textarea>
   `
   addErrorDetail({ content, handleContinue: 'handleFinishModifyNotClosingLabel()' })
 }
