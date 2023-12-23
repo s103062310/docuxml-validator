@@ -1,7 +1,6 @@
 :root {
   /* gray */
-  --color--black: #000000;
-  --color--gray-dark: #555555;
+  --color--black: #333333;
   --color--gray: #777777;
   --color--gray-light: #aeaeae;
   --color--gray-border: #e8e8e8;
@@ -29,6 +28,7 @@ html {
 }
 
 body {
+  color: var(--color--black);
   background-color: var(--color--gray-bg);
 }
 
@@ -103,6 +103,10 @@ textarea {
 }
 
 /* override bootstrap */
+
+i {
+  margin-right: 0.25rem;
+}
 
 .btn {
   background-color: var(--color--blue);

@@ -51,10 +51,9 @@
           class="logo"
         />
       </a>
-
-      <a href="https://docusky.org.tw/DocuSky/docuTools/userMain/" target="_blank">
-        <i class="bi bi-cloud-fill" style="font-size: 1.5rem"></i>
-        <!-- TODO: tooltip 我的資料庫 -->
+      <a class="btn" href="https://docusky.org.tw/DocuSky/docuTools/userMain/" target="_blank">
+        <i class="bi bi-cloud-fill"></i>
+        我的資料庫
       </a>
     </nav>
 
@@ -64,18 +63,28 @@
       <p>這個工具提供 DocuXML 的合法性檢測，快速找出無法建庫的原因並修正。</p>
       <div class="group">
         <button id="upload-btn" class="btn" onclick="$('#upload-input').click()">
+          <i class="bi bi-upload"></i>
           上傳 XML 檔案
         </button>
         <input id="upload-input" type="file" accept=".xml" style="display: none" />
         <button id="download-btn" class="btn" onclick="downloadResult()" style="display: none">
+          <i class="bi bi-download"></i>
           下載已修正成果
         </button>
       </div>
       <div class="line"></div>
-      <p>
-        若無法順利建庫，請螢幕截圖錯誤訊息並附上 xml 檔案，來信
-        <span id="intro__email"></span> 由專人協助。
-      </p>
+      <ul style="list-style-type: '★  '">
+        <li style="color: var(--color--success)">
+          <strong>
+            為避免一再轉出包含錯誤的檔案，請務必記得將在本工具中做的修改，同步到原始檔案中（excel
+            表格、txt 文本等）。</strong
+          >
+        </li>
+        <li>
+          若無法順利建庫，請螢幕截圖錯誤訊息並附上 xml 檔案，來信
+          <span id="intro__email"></span> 由專人協助。
+        </li>
+      </ul>
     </header>
 
     <!-- main -->

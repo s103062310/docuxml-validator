@@ -110,10 +110,10 @@ const serviceElement = ({ text, title = '問題諮詢' } = {}) => {
  */
 const highlightElement = ({ attr, index, text, isSolved = false, isFinish = false }) => {
   // html need prevent '\n'
-  const modifyBtn = `<button class="btn" onclick="handleShowModify('${attr}', ${index})">修改</button>`
-  const deleteBtn = `<button class="btn" onclick="handleDelete('${attr}', ${index})">刪除</button>`
-  const keepBtn = `<button class="btn" onclick="handleKeep('${attr}', ${index})">保留</button>`
-  const resetBtn = `<button class="btn" onclick="handleReset('${attr}', ${index})">重設</button>`
+  const modifyBtn = `<button class="btn" onclick="handleShowModify('${attr}', ${index})"><i class="bi bi-pencil-fill"></i>修改</button>`
+  const deleteBtn = `<button class="btn" onclick="handleDelete('${attr}', ${index})"><i class="bi bi-trash-fill"></i>刪除</button>`
+  const keepBtn = `<button class="btn" onclick="handleKeep('${attr}', ${index})"><i class="bi bi-clipboard-check-fill"></i>保留</button>`
+  const resetBtn = `<button class="btn" onclick="handleReset('${attr}', ${index})"><i class="bi bi-reply-fill"></i>重設</button>`
   const btns = isSolved ? resetBtn : modifyBtn + deleteBtn + keepBtn
   const choices = `<div class="choices" style="display: none">${btns}</div>`
   const ID = `error-${_errorNum}__${attr}${index}`
@@ -155,8 +155,7 @@ const modifyElement = ({ attr, index }) => {
  */
 const errorElement = ({ text, iconStyle }) => `
   <div class="error-msg">
-    <i class="bi bi-x-circle-fill" style="${iconStyle}"></i>
-    ${text}
+    <i class="bi bi-x-circle-fill" style="${iconStyle}"></i>${text}
   </div>
 `
 
@@ -168,9 +167,9 @@ const toolBarElement = () => `
       '、',
     )} 為 xml 格式中用來辨認標籤的符號，請使用工具列或者點擊以下文本中標示出的符號做更改：
     <div id="error-${_errorNum}__tools" class="group" style="margin-top: 0.75rem">
-      <button class="btn" onclick="handleAll(handleDelete)">全部刪除</button>
-      <button class="btn" onclick="handleAll(handleKeep)">全部保留</button>
-      <button class="btn" onclick="handleAll(handleReset)">重設</button>
+      <button class="btn" onclick="handleAll(handleDelete)"><i class="bi bi-trash-fill"></i>全部刪除</button>
+      <button class="btn" onclick="handleAll(handleKeep)"><i class="bi bi-clipboard-check-fill"></i>全部保留</button>
+      <button class="btn" onclick="handleAll(handleReset)"><i class="bi bi-reply-fill"></i>全部重設</button>
     </div>
     <div class="line"></div>
   `
