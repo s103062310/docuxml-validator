@@ -42,7 +42,7 @@ const addStatusRow = ({ status = 'loading', text = '驗證中...' } = {}) => {
       <div class="status-row__text">${text}</div>
     </div>
   `
-  $('#content').append(html)
+  $('main').append(html)
 }
 
 /**
@@ -64,7 +64,7 @@ const addErrorDetail = ({ content, handleContinue }) => {
       </div>
     </div>
   `
-  $('#content').append(`<div class="detail">${html}</div>`)
+  $('main').append(`<div class="detail">${html}</div>`)
 }
 
 const addErrorInFinish = () => {
