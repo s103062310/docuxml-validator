@@ -45,7 +45,7 @@ const handleDelete = (attr, index) => {
  * @param {number} index target index in attribute's symbol array of stop info
  */
 const handleKeep = (attr, index) => {
-  const result = _symbol[_stopInfo.highlights[attr][index].target]
+  const result = replaceSymbol(_stopInfo.highlights[attr][index].target)
   _stopInfo.highlights[attr][index].decision = '保留'
   _stopInfo.highlights[attr][index].result = result
   const highlight = highlightElement({ attr, index, text: result, isSolved: true })
@@ -60,7 +60,7 @@ const handleKeep = (attr, index) => {
 const handleReset = (attr, index) => {
   delete _stopInfo.highlights[attr][index].decision
   delete _stopInfo.highlights[attr][index].result
-  const text = _stopInfo.highlights[attr][index].target
+  const text = replaceSymbol(_stopInfo.highlights[attr][index].target)
   const highlight = highlightElement({ attr, index, text })
   $(`#error-${_errorNum}__${attr}${index}`).replaceWith(highlight)
 }
@@ -86,7 +86,7 @@ const handleChangeModifyInput = (attr, index) => {
  */
 const handleCancelModify = (attr, index) => {
   const ID = `#error-${_errorNum}__${attr}${index}`
-  const text = _stopInfo.highlights[attr][index].target
+  const text = replaceSymbol(_stopInfo.highlights[attr][index].target)
   const highlight = highlightElement({ attr, index, text })
   $(ID).replaceWith(highlight)
 }

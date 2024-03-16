@@ -3,15 +3,15 @@ const _symbol = {
   '<': '&lt;',
   '>': '&gt;',
   '&': '&amp;',
+  "'": '&apos;',
   '"': '&quot;',
-  ' ': '&nbsp;',
 }
 
 /** @type {RegExp} regular expression of global illegal symbol  */
-const _illegalSymbolRegex = new RegExp(/<|>|"|&(?!.+;)/g)
+const _illegalSymbolRegex = new RegExp(/<|>|"|&(?!(lt|gt|amp|apos|quot);)([^;]+;)?/g)
 
 /** @type {RegExp} regular expression of label */
-const _labelRegex = new RegExp(/<\s*\/?\s*[a-zA-Z0-9_]+(\s+[a-zA-Z0-9_]+="[^"]+")*\s*\/?\s*>/g)
+const _labelRegex = new RegExp(/<\s*\/?\s*[a-zA-Z0-9_.]+(\s+[a-zA-Z0-9_]+="[^"]+")*\s*\/?\s*>/g)
 
 /** @type {string} name of xml file */
 let _filename = 'validated'
