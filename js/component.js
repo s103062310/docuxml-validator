@@ -137,7 +137,7 @@ const modifyElement = ({ attr, index }) => {
       id="${ID}__input" 
       class="form-control modify" 
       type="text" 
-      value="${_stopInfo.highlights[attr][index].target}" 
+      value="${replaceSymbol(_stopInfo.highlights[attr][index].target)}" 
       onChange="handleChangeModifyInput('${attr}', ${index})"
     >
   `

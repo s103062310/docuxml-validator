@@ -65,6 +65,17 @@ const findAllByRegex = ({ value, regex }) => {
 }
 
 /**
+ *
+ * @param {string} str original string
+ * @returns {string} symbol replaced string
+ */
+const replaceSymbol = (str) =>
+  Object.entries(_symbol).reduce(
+    (result, [key, value]) => result.replace(new RegExp(key, 'g'), value),
+    str,
+  )
+
+/**
  * highlight targets in giving value
  * @param {string} key key of highlight information
  * @param {string} value original string
@@ -74,8 +85,8 @@ const highlightValue = (key, value) => {
   let text = value
   _stopInfo.highlights[key].forEach(({ index, target }, i) => {
     const beforeStr = text.substring(0, index)
-    const afterStr = text.substring(index + 1)
-    const highlight = highlightElement({ attr: key, index: i, text: target })
+    const afterStr = text.substring(index + target.length)
+    const highlight = highlightElement({ attr: key, index: i, text: replaceSymbol(target) })
     text = `${beforeStr}${highlight}${afterStr}`
   })
   return text
