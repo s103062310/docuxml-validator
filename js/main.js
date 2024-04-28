@@ -1,3 +1,8 @@
+// initialize when browser is ready
+$(document).ready(function () {
+  switchLanguage(_lang)
+})
+
 /**
  * main validation loop
  */

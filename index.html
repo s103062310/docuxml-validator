@@ -49,10 +49,24 @@
           class="logo"
         />
       </a>
-      <a class="btn" href="https://docusky.org.tw/DocuSky/docuTools/userMain/" target="_blank">
-        <i class="bi bi-cloud-fill"></i>
-        我的資料庫
-      </a>
+      <div class="tools">
+        <div
+          class="btn"
+          onmouseenter="$('.lang').removeClass('hide')"
+          onmouseleave="$('.lang').addClass('hide')"
+          onclick="$('.lang').toggleClass('hide')"
+        >
+          <i class="bi bi-translate"></i>選擇語言
+          <div class="lang hide">
+            <span class="lang-item" onclick="switchLanguage('zh')">中文</span>
+            <span class="lang-item" onclick="switchLanguage('en')">English</span>
+          </div>
+        </div>
+        <a class="btn" href="https://docusky.org.tw/DocuSky/docuTools/userMain/" target="_blank">
+          <i class="bi bi-cloud-fill"></i>
+          我的資料庫
+        </a>
+      </div>
     </nav>
 
     <!-- header -->
@@ -92,6 +106,9 @@
     <div id="modals"></div>
 
     <!-- JAVASCRIPT FILE -->
+    <script src="./js/language/zh.js"></script>
+    <script src="./js/language/en.js"></script>
+    <script src="./js/language/main.js"></script>
     <script src="./js/schema.js"></script>
     <script src="./js/global.js"></script>
     <script src="./js/utils.js"></script>
