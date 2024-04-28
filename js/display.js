@@ -15,9 +15,9 @@ const showDetectAttributeSymbol = () => {
   // TODO: 段落資訊
   const content = `
     ${toolBarElement()}
-    標籤名稱：<span class="label">${_stopInfo.label.labelName}</span>
+    ${getText('errorDetailSymbolAttrName')}<span class="label">${_stopInfo.label.labelName}</span>
     <br/>
-    標籤屬性：
+    ${getText('errorDetailSymbolAttrValue')}
     <br/>
     ${Object.entries(_stopInfo.label.attributes)
       .map(([key, value]) => {
@@ -35,7 +35,9 @@ const showDetectAttributeSymbol = () => {
 
 const showDeleteEndLabel = () => {
   // TODO: 段落資訊
-  const content = `標籤 ${_symbol['<']}${_stopInfo.label.labelName}${_symbol['>']} 缺少起始標籤，將自動刪除。`
+  const content = `${_symbol['<']}${_stopInfo.label.labelName}${_symbol['>']} ${getText(
+    'errorDetailDeleteEnd',
+  )}`
   addErrorDetail({ content, handleContinue: 'handleFinishDeleteEndLabel()' })
 }
 
@@ -44,19 +46,12 @@ const showModifyNotClosingLabel = () => {
   const labels = _stopInfo.extra.map((name) => `${_symbol['<']}${name}${_symbol['>']}`).join('、')
   const rowNum = _stopInfo.value.split('\n').length
   const content = `
-    偵測到未閉合標籤 ${labels}，請根據實際需求修改 XML 內容：
+    ${getText('errorDetailNested1')} ${labels}${getText('errorDetailNested2')}
     <ul style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--color--gray);">
-      <li>
-        標籤是由特殊符號 ${_symbol['<']} 與 ${_symbol['>']} 夾起來的內容
-        ，例：${_symbol['<']}LabelName${_symbol['>']}。
-      </li>
-      <li>若此段文字不需要標籤，請修改所有 ${_symbol['<']} 和 ${_symbol['>']} 避免使用。</li>
-      <li>
-        若此段文字有標籤需求，請確認標籤有正確嵌套，意即每個起始標籤皆需配對到一個結束標籤 
-        (${_symbol['<']}LabelName${_symbol['>']}...${_symbol['<']}/LabelName${_symbol['>']})，
-        或者自行閉合 (${_symbol['<']}LabelName /${_symbol['>']})，且標籤之間沒有交錯。
-      </li>
-      <li>此類錯誤涉及 XML 編碼，若有修改困難，請來信尋求協助。</li>
+      <li>${getText('errorDetailNestedNote1')}</li>
+      <li>${getText('errorDetailNestedNote2')}</li>
+      <li>${getText('errorDetailNestedNote3')}</li>
+      <li>${getText('errorDetailNestedNote4')}</li>
     </ul>
     <div class="line"></div>
     <div class="textarea__container">
@@ -102,7 +97,7 @@ const showModifyNotClosingLabel = () => {
 
 const showDeleteRedundant = () => {
   const content = `
-    在標籤外偵測到多餘的文字，將自動刪除該內容。
+    ${getText('errorDetailRedundant')}
     <div class="line"></div>
     ${_stopInfo.value.replace(/\n/g, '<br/>')}
   `
@@ -114,7 +109,7 @@ const showAddClosingLabels = () => {
     .map((name) => `${_symbol['<']}${name}${_symbol['>']}`)
     .reverse()
     .join('、')
-  const content = `${labels} 缺少結束標籤，將自動補在文件尾端。`
+  const content = `${labels} ${getText('errorDetailAddEnd')}`
   addErrorDetail({ content, handleContinue: 'handleFinishAddClosingLabels()' })
 }
 

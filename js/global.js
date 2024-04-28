@@ -37,9 +37,8 @@ let _stopInfo = {
 }
 
 // language
-const _langSet = { zh: _zh, en: _en }
 const { searchParams } = new URL(location.href)
-let _lang = searchParams.get('l') || 'zh'
+const _lang = searchParams.get('l') || 'zh'
 
 // self defined data structure
 

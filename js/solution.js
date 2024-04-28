@@ -87,7 +87,7 @@ const handleFinishDetectAttributeSymbol = () => {
 const handleFinishDeleteEndLabel = () => {
   const { beforeStr, afterStr } = getKeepingString('label')
   _xml = beforeStr + afterStr
-  continueValidation(['刪除'])
+  continueValidation([getText('delete')])
 }
 
 const handleFinishModifyNotClosingLabel = () => {
@@ -118,12 +118,12 @@ const handleFinishModifyNotClosingLabel = () => {
   // update
   const { beforeStr, afterStr } = getKeepingString('value')
   _xml = beforeStr + value + afterStr
-  continueValidation(['修改'])
+  continueValidation([getText('modify')])
 }
 
 const handleFinishDeleteRedundant = () => {
   _xml = _xml.substring(0, _validateIndex)
-  continueValidation(['刪除'])
+  continueValidation([getText('delete')])
 }
 
 const handleFinishAddClosingLabels = () => {
@@ -133,7 +133,7 @@ const handleFinishAddClosingLabels = () => {
     .map((str) => '\n' + str)
     .join('')
   _xml = _xml + labels
-  continueValidation(['修改'])
+  continueValidation([getText('modify')])
 }
 
 const handleFinishCannotIdentifyLabel = () => {

@@ -29,7 +29,7 @@ const addModal = ({ id, title, content, handleClick }) => {
 /**
  * @param {StatusRow} row row data which is going to display
  */
-const addStatusRow = ({ status = 'loading', text = '驗證中...' } = {}) => {
+const addStatusRow = ({ status = 'loading', text = getText('statusIng') } = {}) => {
   const isLoading = status === 'loading'
   const isSuccess = status === 'success'
   const style = isLoading ? '' : `style="color: var(--color--${status});"`
@@ -57,10 +57,12 @@ const addErrorDetail = ({ content, handleContinue }) => {
       <div class="group">
         ${
           handleContinue
-            ? `<button class="btn" onclick="${handleContinue}" onblur="handleBlurContinue()">繼續</button>`
+            ? `<button class="btn" onclick="${handleContinue}" onblur="handleBlurContinue()">${getText(
+                'continue',
+              )}</button>`
             : ''
         }        
-        <button class="btn btn-outline" onclick="endValidate()">結束</button>
+        <button class="btn btn-outline" onclick="endValidate()">${getText('finish')}</button>
       </div>
     </div>
   `
@@ -68,7 +70,7 @@ const addErrorDetail = ({ content, handleContinue }) => {
 }
 
 const addErrorInFinish = () => {
-  const error = errorElement({ text: '請修正完錯誤再繼續' })
+  const error = errorElement({ text: getText('errorDoSth') })
   $(`#error-${_errorNum}__fin`).append(error)
 }
 
@@ -110,10 +112,18 @@ const serviceElement = ({ text, title = '問題諮詢' } = {}) => {
  */
 const highlightElement = ({ attr, index, text, isSolved = false, isFinish = false }) => {
   // html need prevent '\n'
-  const modifyBtn = `<button class="btn" onclick="handleShowModify('${attr}', ${index})"><i class="bi bi-pencil-fill"></i>修改</button>`
-  const deleteBtn = `<button class="btn" onclick="handleDelete('${attr}', ${index})"><i class="bi bi-trash-fill"></i>刪除</button>`
-  const keepBtn = `<button class="btn" onclick="handleKeep('${attr}', ${index})"><i class="bi bi-clipboard-check-fill"></i>保留</button>`
-  const resetBtn = `<button class="btn" onclick="handleReset('${attr}', ${index})"><i class="bi bi-reply-fill"></i>重設</button>`
+  const modifyBtn = `<button class="btn" onclick="handleShowModify('${attr}', ${index})"><i class="bi bi-pencil-fill"></i>${getText(
+    'modify',
+  )}</button>`
+  const deleteBtn = `<button class="btn" onclick="handleDelete('${attr}', ${index})"><i class="bi bi-trash-fill"></i>${getText(
+    'delete',
+  )}</button>`
+  const keepBtn = `<button class="btn" onclick="handleKeep('${attr}', ${index})"><i class="bi bi-clipboard-check-fill"></i>${getText(
+    'keep',
+  )}</button>`
+  const resetBtn = `<button class="btn" onclick="handleReset('${attr}', ${index})"><i class="bi bi-reply-fill"></i>${getText(
+    'reset',
+  )}</button>`
   const btns = isSolved ? resetBtn : modifyBtn + deleteBtn + keepBtn
   const choices = `<div class="choices" style="display: none">${btns}</div>`
   const ID = `error-${_errorNum}__${attr}${index}`
@@ -141,8 +151,12 @@ const modifyElement = ({ attr, index }) => {
       onChange="handleChangeModifyInput('${attr}', ${index})"
     >
   `
-  const finBtn = `<button class="btn modify" onclick="handleModify('${attr}', ${index})">確定</button>`
-  const cancelBtn = `<button class="btn btn-outline modify" onclick="handleCancelModify('${attr}', ${index})">取消</button>`
+  const finBtn = `<button class="btn modify" onclick="handleModify('${attr}', ${index})">${getText(
+    'sure',
+  )}</button>`
+  const cancelBtn = `<button class="btn btn-outline modify" onclick="handleCancelModify('${attr}', ${index})">${getText(
+    'cancel',
+  )}</button>`
   const modify = `<div class="modify-group">${input}${finBtn}${cancelBtn}</div>`
   return `<div id="${ID}" class="field">${modify}</div>`
 }
@@ -163,13 +177,17 @@ const errorElement = ({ text, iconStyle }) => `
  * @returns html of modification tool bar
  */
 const toolBarElement = () => `
-    ${Object.keys(_symbol).join(
-      '、',
-    )} 為 xml 格式中用來辨認標籤的符號，請使用工具列或者點擊以下文本中標示出的符號做更改：
+    ${getText('errorDetailSymbol')}
     <div id="error-${_errorNum}__tools" class="group" style="margin-top: 0.75rem">
-      <button class="btn" onclick="handleAll(handleDelete)"><i class="bi bi-trash-fill"></i>全部刪除</button>
-      <button class="btn" onclick="handleAll(handleKeep)"><i class="bi bi-clipboard-check-fill"></i>全部保留</button>
-      <button class="btn" onclick="handleAll(handleReset)"><i class="bi bi-reply-fill"></i>全部重設</button>
+      <button class="btn" onclick="handleAll(handleDelete)"><i class="bi bi-trash-fill"></i>${getText(
+        'deleteAll',
+      )}</button>
+      <button class="btn" onclick="handleAll(handleKeep)"><i class="bi bi-clipboard-check-fill"></i>${getText(
+        'keepAll',
+      )}</button>
+      <button class="btn" onclick="handleAll(handleReset)"><i class="bi bi-reply-fill"></i>${getText(
+        'resetAll',
+      )}</button>
     </div>
     <div class="line"></div>
   `

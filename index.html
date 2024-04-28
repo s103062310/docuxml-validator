@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
     <!-- link information -->
-    <meta property="og:title" content="DocuXML 檢測工具" />
+    <meta property="og:title" content="建庫檔(DocuXML) 檢測工具" />
     <meta
       property="og:description"
       content="這個工具提供 DocuXML 的合法性檢測，快速找出無法建庫的原因並修正。"
@@ -14,7 +14,7 @@
 
     <!-- browser tab -->
     <link rel="icon" href="https://docusky.org.tw/DocuSky/images/logo/icon.png" />
-    <title>DocuXML 檢測工具</title>
+    <title>建庫檔(DocuXML) 檢測工具</title>
 
     <!-- JS -->
     <script src="https://docusky.org.tw/DocuSky/packages/jquery/v.2.2.4/jquery.min.js"></script>
@@ -56,45 +56,45 @@
           onmouseleave="$('.lang').addClass('hide')"
           onclick="$('.lang').toggleClass('hide')"
         >
-          <i class="bi bi-translate"></i>選擇語言
+          <i class="bi bi-translate"></i><span id="nav-language">選擇語言</span>
           <div class="lang hide">
-            <span class="lang-item" onclick="switchLanguage('zh')">中文</span>
-            <span class="lang-item" onclick="switchLanguage('en')">English</span>
+            <a class="lang-item" href="./index.html">中文</a>
+            <a class="lang-item" href="./index.html?l=en">English</a>
           </div>
         </div>
         <a class="btn" href="https://docusky.org.tw/DocuSky/docuTools/userMain/" target="_blank">
           <i class="bi bi-cloud-fill"></i>
-          我的資料庫
+          <span id="nav-db">我的資料庫</span>
         </a>
       </div>
     </nav>
 
     <!-- header -->
     <header>
-      <h1>DocuXML 檢測工具</h1>
-      <p>這個工具提供 DocuXML 的合法性檢測，快速找出無法建庫的原因並修正。</p>
+      <h1 id="title">建庫檔(DocuXML) 檢測工具</h1>
+      <p id="description">這個工具提供 DocuXML 的合法性檢測，快速找出無法建庫的原因並修正。</p>
       <div class="group">
         <button id="upload-btn" class="btn" onclick="$('#upload-input').click()">
           <i class="bi bi-upload"></i>
-          上傳 XML 檔案
+          <span id="btn1">上傳 XML 檔案</span>
         </button>
         <input id="upload-input" type="file" accept=".xml" style="display: none" />
         <button id="download-btn" class="btn" onclick="downloadResult()" style="display: none">
           <i class="bi bi-download"></i>
-          下載已修正成果
+          <span id="btn2">下載已修正成果</span>
         </button>
       </div>
       <div class="line"></div>
       <ul style="list-style-type: '★  '">
         <li style="color: var(--color--success)">
-          <strong>
+          <strong id="note1">
             為避免一再轉出包含錯誤的檔案，請務必記得將在本工具中做的修改，同步到原始檔案中（excel
             表格、txt 文本等）。</strong
           >
         </li>
         <li>
-          若無法順利建庫，請螢幕截圖錯誤訊息並附上 xml 檔案，來信
-          <span id="intro__email"></span> 由專人協助。
+          <span id="note2-1">若無法順利建庫，請螢幕截圖錯誤訊息並附上 xml 檔案，來信</span>
+          <span id="intro__email"></span> <span id="note2-2">由專人協助。</span>
         </li>
       </ul>
     </header>
@@ -106,11 +106,11 @@
     <div id="modals"></div>
 
     <!-- JAVASCRIPT FILE -->
+    <script src="./js/global.js"></script>
+    <script src="./js/schema.js"></script>
     <script src="./js/language/zh.js"></script>
     <script src="./js/language/en.js"></script>
     <script src="./js/language/main.js"></script>
-    <script src="./js/schema.js"></script>
-    <script src="./js/global.js"></script>
     <script src="./js/utils.js"></script>
     <script src="./js/file.js"></script>
     <script src="./js/component.js"></script>
