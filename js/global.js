@@ -1,8 +1,8 @@
 /** @type {Object.<string, string>} specific symbol mapping */
 const _symbol = {
+  '&': '&amp;',
   '<': '&lt;',
   '>': '&gt;',
-  '&': '&amp;',
   "'": '&apos;',
   '"': '&quot;',
 }
