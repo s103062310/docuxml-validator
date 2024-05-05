@@ -33,7 +33,7 @@ const handleShowModify = (attr, index) => {
  * @param {number} index target index in attribute's symbol array of stop info
  */
 const handleDelete = (attr, index) => {
-  _stopInfo.highlights[attr][index].decision = '刪除'
+  _stopInfo.highlights[attr][index].decision = getText('delete')
   _stopInfo.highlights[attr][index].result = ''
   const highlight = highlightElement({ attr, index, text: '&emsp;', isSolved: true })
   $(`#error-${_errorNum}__${attr}${index}`).replaceWith(highlight)
@@ -46,7 +46,7 @@ const handleDelete = (attr, index) => {
  */
 const handleKeep = (attr, index) => {
   const result = replaceSymbol(_stopInfo.highlights[attr][index].target)
-  _stopInfo.highlights[attr][index].decision = '保留'
+  _stopInfo.highlights[attr][index].decision = getText('keep')
   _stopInfo.highlights[attr][index].result = result
   const highlight = highlightElement({ attr, index, text: result, isSolved: true })
   $(`#error-${_errorNum}__${attr}${index}`).replaceWith(highlight)
@@ -102,20 +102,20 @@ const handleModify = (attr, index) => {
   const value = /** @type {string} */ ($(inputId).val())
   if (_illegalSymbolRegex.test(value)) {
     const error = errorElement({
-      text: `請勿使用 ${Object.keys(_symbol).join('、')} 等符號`,
+      text: getText('errorSymbol'),
       iconStyle: 'margin-left: 0.25rem',
     })
     $(inputId).addClass('error')
     $(ID).append(error)
   } else if (value === '') {
     const error = errorElement({
-      text: '必填',
+      text: getText('errorRequired'),
       iconStyle: 'margin-left: 0.25rem',
     })
     $(inputId).addClass('error')
     $(ID).append(error)
   } else {
-    _stopInfo.highlights[attr][index].decision = '修改'
+    _stopInfo.highlights[attr][index].decision = getText('modify')
     _stopInfo.highlights[attr][index].result = value
     const highlight = highlightElement({ attr, index, text: value, isSolved: true })
     $(ID).replaceWith(highlight)

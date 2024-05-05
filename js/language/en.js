@@ -1,0 +1,52 @@
+const _en = {
+  title: 'DocuXML Validator Tool',
+  description:
+    'This tool provides legitimacy checks for library files (DocuXML), quickly identifying reasons why a library cannot be created and facilitating corrections.',
+  note1:
+    'To avoid repeatedly exporting files containing errors, please remember to synchronize the modifications made in this tool to your original files (excel tables, text text, etc.).',
+  note2_1:
+    'If the database cannot be created successfully, please screenshot the error message and attach the XML file, and write to',
+  note2_2: 'for professional assistance.',
+  navLanguage: 'Language',
+  navDB: 'My Database',
+  upload: 'Upload XML File',
+  download: 'Download Results',
+  statusIng: 'Validating ...',
+  statusSuccess: 'Verification is successful!',
+  statusSymbol: 'Special symbol is detected',
+  statusSymbolAttr: 'Special symbol is detected in attribute',
+  statusNested: 'XML tag is nested incorrectly',
+  statusRedundant: 'Redundant content is detected',
+  errorDetailSymbol: `${Object.keys(_symbol).join(
+    ', ',
+  )} are symbols used to identify tags in XML format. Please use the toolbar or click on the symbols marked in the following text to make changes:`,
+  errorDetailSymbolAttrName: 'Tag Name: ',
+  errorDetailSymbolAttrValue: 'Tag Attributes: ',
+  errorDetailNested1: 'Unclosed label is detected',
+  errorDetailNested2: ', please modify the XML content according to actual needs:',
+  errorDetailNestedNote1: `Label is the content sandwiched by the special symbols ${_symbol['<']} and ${_symbol['>']}, for example: ${_symbol['<']}LabelName${_symbol['>']}.`,
+  errorDetailNestedNote2: `If the content does NOT require labels, please avoid to use any ${_symbol['<']} and ${_symbol['>']}.`,
+  errorDetailNestedNote3: `If the content requires labels, please make sure labels are nested correctly. That is, each start label needs to be paired with an end label (${_symbol['<']}LabelName${_symbol['>']}...${_symbol['<']}/LabelName${_symbol['>']}) or each label needs to self-closing (${_symbol['<']}LabelName /${_symbol['>']}) without interleaving between labels.`,
+  errorDetailNestedNote4:
+    'This type of error involves XML encoding. If you have difficulty modifying it, please mail to us for assistance.',
+  errorDetailDeleteEnd: 'The start label is missing and will be automatically deleted.',
+  errorDetailAddEnd:
+    'The end label is missing and will be automatically added to the end of the document.',
+  errorDetailRedundant:
+    'The extra content are detected outside the label and will be automatically deleted.',
+  errorSymbol: `Do NOT use ${Object.keys(_symbol).join(', ')}`,
+  errorRequired: 'Required',
+  errorDoSth: 'Please fix the error above',
+  modify: 'Revise',
+  sure: 'Revise',
+  cancel: 'Cancel',
+  delete: 'Delete',
+  keep: 'Reserve',
+  reset: 'Reset',
+  deleteAll: 'Delete All',
+  keepAll: 'Reserve All',
+  resetAll: 'Reset All',
+  continue: 'Continue',
+  finish: 'Finish',
+  unfinished: 'Unfinished',
+}

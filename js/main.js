@@ -1,3 +1,8 @@
+// initialize when browser is ready
+$(document).ready(function () {
+  switchLanguage()
+})
+
 /**
  * main validation loop
  */
@@ -77,7 +82,7 @@ const validate = () => {
     _validateIndex = _validateIndex + result.index + result[0].length
   }
 
-  stopValidation({ status: 'success', text: '驗證成功！' })
+  stopValidation({ status: 'success', text: getText('statusSuccess') })
   endValidate()
 }
 
@@ -112,7 +117,7 @@ const endValidate = () => {
     // validation success
     $('#download-btn').show()
   } else {
-    addActionLabelsAndCollapse(['未完成'])
+    addActionLabelsAndCollapse([getText('unfinished')])
   }
 }
 

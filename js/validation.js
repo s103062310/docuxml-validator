@@ -7,7 +7,7 @@ const checkText = (value) => {
   if (highlights.length > 0) {
     _errorNum += 1
     _stopInfo = { value, highlights: { value: highlights } }
-    stopValidation({ status: 'error', text: '偵測到特殊符號' })
+    stopValidation({ status: 'error', text: getText('statusSymbol') })
     showDetectSymbol()
     return true
   }
@@ -33,7 +33,7 @@ const checkLabel = (label, index) => {
   if (Object.keys(highlights).length > 0) {
     _errorNum += 1
     _stopInfo = { label, highlights, extra: index }
-    stopValidation({ status: 'error', text: '偵測到標籤屬性中有特殊符號' })
+    stopValidation({ status: 'error', text: getText('statusSymbolAttr') })
     showDetectAttributeSymbol()
     return true
   }
@@ -70,7 +70,7 @@ const checkLabelClose = (label, index) => {
     _errorNum += 1
     stopValidation({
       status: 'error',
-      text: '標籤沒有正確嵌套',
+      text: getText('statusNested'),
     })
 
     const stackIndex = _labelNameStack.indexOf(labelName)
@@ -115,7 +115,7 @@ const checkRedundant = () => {
   if (finalString) {
     _errorNum += 1
     _stopInfo = { value: finalString }
-    stopValidation({ status: 'error', text: '偵測到多餘的內容' })
+    stopValidation({ status: 'error', text: getText('statusRedundant') })
     showDeleteRedundant()
     return true
   }
@@ -128,7 +128,7 @@ const checkRedundant = () => {
 const checkStack = () => {
   if (_labelNameStack.length > 0) {
     _errorNum += 1
-    stopValidation({ status: 'error', text: '標籤沒有正確嵌套' })
+    stopValidation({ status: 'error', text: getText('statusNested') })
     showAddClosingLabels()
     return true
   }

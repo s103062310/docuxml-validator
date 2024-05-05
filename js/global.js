@@ -1,8 +1,8 @@
 /** @type {Object.<string, string>} specific symbol mapping */
 const _symbol = {
+  '&': '&amp;',
   '<': '&lt;',
   '>': '&gt;',
-  '&': '&amp;',
   "'": '&apos;',
   '"': '&quot;',
 }
@@ -35,6 +35,10 @@ let _stopInfo = {
   highlights: /** @type {Object.<string, HighlightInfo>} */ ({}), // info for each highlights
   extra: undefined, // extra info needs to be recorded
 }
+
+// language
+const { searchParams } = new URL(location.href)
+const _lang = searchParams.get('l') || 'zh'
 
 // self defined data structure
 
