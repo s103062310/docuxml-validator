@@ -22,18 +22,18 @@ const _en = {
   )} are symbols used to identify tags in XML format. Please use the toolbar or click on the symbols marked in the following text to make changes:`,
   errorDetailSymbolAttrName: 'Tag Name: ',
   errorDetailSymbolAttrValue: 'Tag Attributes: ',
-  errorDetailNested1: '偵測到未閉合標籤',
-  errorDetailNested2: '，請根據實際需求修改 XML 內容：',
-  errorDetailNestedNote1: `標籤是由特殊符號 ${_symbol['<']} 與 ${_symbol['>']} 夾起來的內容
-  ，例：${_symbol['<']}LabelName${_symbol['>']}。`,
-  errorDetailNestedNote2: `若此段文字不需要標籤，請修改所有 ${_symbol['<']} 和 ${_symbol['>']} 避免使用。`,
-  errorDetailNestedNote3: `若此段文字有標籤需求，請確認標籤有正確嵌套，意即每個起始標籤皆需配對到一個結束標籤 
-  (${_symbol['<']}LabelName${_symbol['>']}...${_symbol['<']}/LabelName${_symbol['>']})，
-  或者自行閉合 (${_symbol['<']}LabelName /${_symbol['>']})，且標籤之間沒有交錯。`,
-  errorDetailNestedNote4: '此類錯誤涉及 XML 編碼，若有修改困難，請來信尋求協助。',
-  errorDetailDeleteEnd: '缺少起始標籤，將自動刪除。',
-  errorDetailAddEnd: '缺少結束標籤，將自動補在文件尾端。',
-  errorDetailRedundant: '在標籤外偵測到多餘的文字，將自動刪除該內容。',
+  errorDetailNested1: 'Unclosed label is detected',
+  errorDetailNested2: ', please modify the XML content according to actual needs:',
+  errorDetailNestedNote1: `Label is the content sandwiched by the special symbols ${_symbol['<']} and ${_symbol['>']}, for example: ${_symbol['<']}LabelName${_symbol['>']}.`,
+  errorDetailNestedNote2: `If the content does NOT require labels, please avoid to use any ${_symbol['<']} and ${_symbol['>']}.`,
+  errorDetailNestedNote3: `If the content requires labels, please make sure labels are nested correctly. That is, each start label needs to be paired with an end label (${_symbol['<']}LabelName${_symbol['>']}...${_symbol['<']}/LabelName${_symbol['>']}) or each label needs to self-closing (${_symbol['<']}LabelName /${_symbol['>']}) without interleaving between labels.`,
+  errorDetailNestedNote4:
+    'This type of error involves XML encoding. If you have difficulty modifying it, please mail to us for assistance.',
+  errorDetailDeleteEnd: 'The start label is missing and will be automatically deleted.',
+  errorDetailAddEnd:
+    'The end label is missing and will be automatically added to the end of the document.',
+  errorDetailRedundant:
+    'The extra content are detected outside the label and will be automatically deleted.',
   errorSymbol: `Do NOT use ${Object.keys(_symbol).join(', ')}`,
   errorRequired: 'Required',
   errorDoSth: 'Please fix the error above',
