@@ -1,4 +1,4 @@
-const _langSet = { zh: _zh, en: _en }
+const _langSet = { zh: _zh, en: _en, ja: _ja }
 
 const getText = (field) => {
   const l = _lang in _langSet ? _lang : 'zh'
