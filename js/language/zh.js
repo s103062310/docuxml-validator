@@ -20,6 +20,7 @@ const _zh = {
   )} 為 xml 格式中用來辨認標籤的符號，請使用工具列或者點擊以下文本中標示出的符號做更改：`,
   errorDetailSymbolAttrName: '標籤名稱：',
   errorDetailSymbolAttrValue: '標籤屬性：',
+  errorDetailNested0: '缺少起始標籤',
   errorDetailNested1: '偵測到未閉合標籤',
   errorDetailNested2: '，請根據實際需求修改 XML 內容：',
   errorDetailNestedNote1: `標籤是由特殊符號 ${_symbol['<']} 與 ${_symbol['>']} 夾起來的內容
@@ -29,7 +30,6 @@ const _zh = {
   (${_symbol['<']}LabelName${_symbol['>']}...${_symbol['<']}/LabelName${_symbol['>']})，
   或者自行閉合 (${_symbol['<']}LabelName /${_symbol['>']})，且標籤之間沒有交錯。`,
   errorDetailNestedNote4: '此類錯誤涉及 XML 編碼，若有修改困難，請來信尋求協助。',
-  errorDetailDeleteEnd: '缺少起始標籤，將自動刪除。',
   errorDetailAddEnd: '缺少結束標籤，將自動補在文件尾端。',
   errorDetailRedundant: '在標籤外偵測到多餘的文字，將自動刪除該內容。',
   errorSymbol: `請勿使用 ${Object.keys(_symbol).join('、')} 等符號`,

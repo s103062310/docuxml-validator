@@ -22,6 +22,7 @@ const _en = {
   )} are symbols used to identify tags in XML format. Please use the toolbar or click on the symbols marked in the following text to make changes:`,
   errorDetailSymbolAttrName: 'Tag Name: ',
   errorDetailSymbolAttrValue: 'Tag Attributes: ',
+  errorDetailNested0: 'The start label is missing',
   errorDetailNested1: 'Unclosed label is detected',
   errorDetailNested2: ', please modify the XML content according to actual needs:',
   errorDetailNestedNote1: `Label is the content sandwiched by the special symbols ${_symbol['<']} and ${_symbol['>']}, for example: ${_symbol['<']}LabelName${_symbol['>']}.`,
@@ -29,7 +30,6 @@ const _en = {
   errorDetailNestedNote3: `If the content requires labels, please make sure labels are nested correctly. That is, each start label needs to be paired with an end label (${_symbol['<']}LabelName${_symbol['>']}...${_symbol['<']}/LabelName${_symbol['>']}) or each label needs to self-closing (${_symbol['<']}LabelName /${_symbol['>']}) without interleaving between labels.`,
   errorDetailNestedNote4:
     'This type of error involves XML encoding. If you have difficulty modifying it, please mail to us for assistance.',
-  errorDetailDeleteEnd: 'The start label is missing and will be automatically deleted.',
   errorDetailAddEnd:
     'The end label is missing and will be automatically added to the end of the document.',
   errorDetailRedundant:

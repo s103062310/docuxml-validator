@@ -40,9 +40,9 @@ const updateStopInfo = () => {
 
   Object.entries(_stopInfo.highlights).forEach(([key, highlight]) => {
     let text = key === 'value' ? _stopInfo.value : _stopInfo.label.attributes[key]
-    highlight.forEach(({ index, decision, result }) => {
+    highlight.forEach(({ index, decision, result, target }) => {
       const beforeStr = text.substring(0, index)
-      const afterStr = text.substring(index + 1)
+      const afterStr = text.substring(index + target.length)
       text = beforeStr + result + afterStr
       if (!actions.includes(decision)) {
         actions.push(decision)
@@ -84,13 +84,7 @@ const handleFinishDetectAttributeSymbol = () => {
   }
 }
 
-const handleFinishDeleteEndLabel = () => {
-  const { beforeStr, afterStr } = getKeepingString('label')
-  _xml = beforeStr + afterStr
-  continueValidation([getText('delete')])
-}
-
-const handleFinishModifyNotClosingLabel = () => {
+const handleFinishModifyLabel = () => {
   const value = /** @type {string} */ ($(`#error-${_errorNum}__textarea`).val())
 
   // check value is well-form

@@ -97,8 +97,27 @@ const checkLabelClose = (label, index) => {
       _validateIndex = start
     } else {
       // have no start label
-      _stopInfo = { label, extra: index }
-      showDeleteEndLabel()
+
+      // find start label of top label
+      const beforeStr = _xml.substring(0, _validateIndex)
+      const topLabelRegex = new RegExp(`<\s*${topLabelName}[^>]*>`, 'g')
+      let start, topLabelResult
+      while ((topLabelResult = topLabelRegex.exec(beforeStr)) !== null) {
+        start = topLabelResult.index + topLabelResult[0].length // last matched label of before string
+      }
+
+      // content of the label
+      const afterStr = _xml.substring(_validateIndex, _xml.length)
+      const regex = new RegExp(`<\s*\/\s*${labelName}[^>]*>`, 'g')
+      const result = regex.exec(afterStr)
+      const end = _validateIndex + result.index + result[0].length
+      const value = _xml.substring(start, end)
+
+      _stopInfo = { value, extra: [labelName] }
+      showModifyNoStartLabel()
+
+      // roll back progress
+      _validateIndex = start
     }
 
     return true
