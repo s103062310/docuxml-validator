@@ -84,13 +84,7 @@ const handleFinishDetectAttributeSymbol = () => {
   }
 }
 
-const handleFinishDeleteEndLabel = () => {
-  const { beforeStr, afterStr } = getKeepingString('label')
-  _xml = beforeStr + afterStr
-  continueValidation([getText('delete')])
-}
-
-const handleFinishModifyNotClosingLabel = () => {
+const handleFinishModifyLabel = () => {
   const value = /** @type {string} */ ($(`#error-${_errorNum}__textarea`).val())
 
   // check value is well-form

@@ -33,12 +33,61 @@ const showDetectAttributeSymbol = () => {
   })
 }
 
-const showDeleteEndLabel = () => {
+const showModifyNoStartLabel = () => {
   // TODO: 段落資訊
-  const content = `${_symbol['<']}${_stopInfo.label.labelName}${_symbol['>']} ${getText(
-    'errorDetailDeleteEnd',
-  )}`
-  addErrorDetail({ content, handleContinue: 'handleFinishDeleteEndLabel()' })
+  const labels = _stopInfo.extra.map((name) => `${_symbol['<']}${name}${_symbol['>']}`).join('、')
+  const rowNum = _stopInfo.value.split('\n').length
+  const content = `
+    ${getText('errorDetailNested0')} ${labels}${getText('errorDetailNested2')}
+    <ul style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--color--gray);">
+      <li>${getText('errorDetailNestedNote1')}</li>
+      <li>${getText('errorDetailNestedNote2')}</li>
+      <li>${getText('errorDetailNestedNote3')}</li>
+      <li>${getText('errorDetailNestedNote4')}</li>
+    </ul>
+    <div class="line"></div>
+    <div class="textarea__container">
+      <textarea id="error-${_errorNum}__textarea" class="form-control" rows="${rowNum}">
+        ${_stopInfo.value}
+      </textarea>
+      <div class="textarea__backdrop" style="height: ${rowNum * 24}px">
+        <div class="textarea__mark"></div>
+      </div>
+    </div>
+  `
+  addErrorDetail({ content, handleContinue: 'handleFinishModifyLabel()' })
+
+  // textarea marks: https://codersblock.com/blog/highlight-text-inside-a-textarea/
+  const textarea = $(`#error-${_errorNum}__textarea`)
+  const handleInput = () => {
+    const text = /** @type {string} */ (textarea.val())
+    let markedText = text
+      .replace(/</g, _symbol['<'])
+      .replace(/>/g, _symbol['>'])
+      .replace(/\n$/g, '\n\n')
+    _stopInfo.extra.forEach((name) => {
+      let result
+      const regex = new RegExp(
+        `${_symbol['<']}\s*/\s*${name}[^${_symbol['>']}]*${_symbol['>']}`,
+        'g',
+      )
+      while ((result = regex.exec(markedText)) !== null) {
+        const beforeStr = markedText.substring(0, result.index)
+        const afterStr = markedText.substring(result.index + result[0].length)
+        markedText = `${beforeStr}<mark>${result[0]}</mark>${afterStr}`
+      }
+    })
+    $('.textarea__mark').html(markedText)
+  }
+  const handleScroll = () => {
+    var scrollTop = textarea.scrollTop()
+    $('.textarea__backdrop').scrollTop(scrollTop)
+  }
+  textarea.on({
+    input: handleInput,
+    scroll: handleScroll,
+  })
+  handleInput()
 }
 
 const showModifyNotClosingLabel = () => {
@@ -63,7 +112,7 @@ const showModifyNotClosingLabel = () => {
       </div>
     </div>
   `
-  addErrorDetail({ content, handleContinue: 'handleFinishModifyNotClosingLabel()' })
+  addErrorDetail({ content, handleContinue: 'handleFinishModifyLabel()' })
 
   // textarea marks: https://codersblock.com/blog/highlight-text-inside-a-textarea/
   const textarea = $(`#error-${_errorNum}__textarea`)
